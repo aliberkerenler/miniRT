@@ -1,0 +1,6 @@
+# Simple scene with one sphere
+
+C 0,0,0 0,0,-1 90
+
+sp 0,0,-5 2 255,0,0
+
