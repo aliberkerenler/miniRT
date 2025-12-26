@@ -99,6 +99,36 @@ static void	parse_plane(t_scene *scene, char **tokens)
 	scene->objects = obj;
 }
 
+static void	xparse_cylinder(t_scene *scene, char **tokens)
+{
+	t_cylinder	*cylinder;
+	t_object	*obj;
+	int			i;
+
+	i = 1;
+	if (!tokens[1] || !tokens[2] || !tokens[3] || !tokens[4] || !tokens[5])
+		exit_error("Invalid cylinder format", ERR_PARSE_FORMAT);
+	cylinder = malloc(sizeof(t_cylinder));
+	if (!cylinder)
+		exit_error("Memory allocation failed", ERR_MALLOC);
+	cylinder->center = parse_vector(tokens, &i);
+	cylinder->axis = vec3_normalize(parse_vector(tokens, &i));
+	cylinder->radius = parse_double(tokens[i++]) / 2.0;
+	cylinder->height = parse_double(tokens[i++]);
+	cylinder->material.albedo = parse_color(tokens, &i);
+	cylinder->material.ambient = 0.1;
+	cylinder->material.diffuse = 0.9;
+	cylinder->material.specular = 0.9;
+	cylinder->material.shininess = 200.0;
+	obj = malloc(sizeof(t_object));
+	if (!obj)
+		exit_error("Memory allocation failed", ERR_MALLOC);
+	obj->type = OBJ_CYLINDER;
+	obj->data = cylinder;
+	obj->next = scene->objects;
+	scene->objects = obj;
+}
+
 static void	free_tokens(char **tokens)
 {
 	int	i;
@@ -139,6 +169,8 @@ void	parse_content(t_scene *scene, char *content)
 					parse_sphere(scene, tokens);
 				else if (ft_strncmp(tokens[0], "pl", 3) == 0)
 					parse_plane(scene, tokens);
+				else if (ft_strncmp(tokens[0], "cy", 3) == 0)
+					parse_cylinder(scene, tokens);
 				free_tokens(tokens);
 			}
 		}

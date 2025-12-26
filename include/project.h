@@ -130,4 +130,3 @@ typedef struct s_scene
 }	t_scene;
 
 #endif
-

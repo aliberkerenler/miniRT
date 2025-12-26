@@ -26,6 +26,7 @@ t_ray		get_camera_ray(t_camera *cam, double u, double v);
 /* Hit fonksiyonları */
 bool		hit_sphere(t_sphere *sphere, t_ray *ray, t_hit_record *rec);
 bool		hit_plane(t_plane *plane, t_ray *ray, t_hit_record *rec);
+bool		hit_cylinder(t_cylinder *cylinder, t_ray *ray, t_hit_record *rec);
 bool		find_closest_hit(t_scene *scene, t_ray *ray, t_hit_record *rec,
 				t_object **hit_obj);
 

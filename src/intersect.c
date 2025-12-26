@@ -7,6 +7,8 @@ static bool	check_object_hit(t_object *obj, t_ray *ray, t_hit_record *rec)
 		return (hit_sphere((t_sphere *)obj->data, ray, rec));
 	else if (obj->type == OBJ_PLANE)
 		return (hit_plane((t_plane *)obj->data, ray, rec));
+	else if (obj->type == OBJ_CYLINDER)
+		return (hit_cylinder((t_cylinder *)obj->data, ray, rec));	
 	return (false);
 }
 

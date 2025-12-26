@@ -17,6 +17,8 @@ static t_material	*get_material(t_object *obj)
 		return (&((t_sphere *)obj->data)->material);
 	else if (obj->type == OBJ_PLANE)
 		return (&((t_plane *)obj->data)->material);
+	else if (obj->type == OBJ_CYLINDER)
+		return (&((t_cylinder *)obj->data)->material);
 	return (NULL);
 }
 
