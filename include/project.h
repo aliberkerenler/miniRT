@@ -38,11 +38,7 @@ typedef struct s_hit_record
 
 typedef struct s_material
 {
-	t_color		albedo;
-	double		ambient;
-	double		diffuse;
-	double		specular;
-	double		shininess;
+	t_color		color;
 }	t_material;
 
 /* ========== Obje Tipleri ========== */

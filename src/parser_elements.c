@@ -1,6 +1,7 @@
 #include "../include/parser.h"
 #include "../include/minirt.h"
 #include "../include/vec3.h"
+#include "../include/render.h"
 
 static void	parse_ambient(t_scene *scene, char **tokens)
 {
@@ -57,11 +58,7 @@ static void	parse_sphere(t_scene *scene, char **tokens)
 		exit_error("Memory allocation failed", ERR_MALLOC);
 	sphere->center = parse_vector(tokens, &i);
 	sphere->radius = parse_double(tokens[i++]) / 2.0;
-	sphere->material.albedo = parse_color(tokens, &i);
-	sphere->material.ambient = 0.1;
-	sphere->material.diffuse = 0.9;
-	sphere->material.specular = 0.9;
-	sphere->material.shininess = 200.0;
+	sphere->material = create_material(parse_color(tokens, &i));
 	obj = malloc(sizeof(t_object));
 	if (!obj)
 		exit_error("Memory allocation failed", ERR_MALLOC);
@@ -85,11 +82,7 @@ static void	parse_plane(t_scene *scene, char **tokens)
 		exit_error("Memory allocation failed", ERR_MALLOC);
 	plane->point = parse_vector(tokens, &i);
 	plane->normal = vec3_normalize(parse_vector(tokens, &i));
-	plane->material.albedo = parse_color(tokens, &i);
-	plane->material.ambient = 0.1;
-	plane->material.diffuse = 0.9;
-	plane->material.specular = 0.9;
-	plane->material.shininess = 200.0;
+	plane->material = create_material(parse_color(tokens, &i));
 	obj = malloc(sizeof(t_object));
 	if (!obj)
 		exit_error("Memory allocation failed", ERR_MALLOC);
@@ -99,7 +92,7 @@ static void	parse_plane(t_scene *scene, char **tokens)
 	scene->objects = obj;
 }
 
-static void	xparse_cylinder(t_scene *scene, char **tokens)
+static void	parse_cylinder(t_scene *scene, char **tokens)
 {
 	t_cylinder	*cylinder;
 	t_object	*obj;
@@ -115,11 +108,7 @@ static void	xparse_cylinder(t_scene *scene, char **tokens)
 	cylinder->axis = vec3_normalize(parse_vector(tokens, &i));
 	cylinder->radius = parse_double(tokens[i++]) / 2.0;
 	cylinder->height = parse_double(tokens[i++]);
-	cylinder->material.albedo = parse_color(tokens, &i);
-	cylinder->material.ambient = 0.1;
-	cylinder->material.diffuse = 0.9;
-	cylinder->material.specular = 0.9;
-	cylinder->material.shininess = 200.0;
+	cylinder->material = create_material(parse_color(tokens, &i));
 	obj = malloc(sizeof(t_object));
 	if (!obj)
 		exit_error("Memory allocation failed", ERR_MALLOC);

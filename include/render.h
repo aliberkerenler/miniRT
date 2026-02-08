@@ -34,5 +34,8 @@ bool		find_closest_hit(t_scene *scene, t_ray *ray, t_hit_record *rec,
 t_color		calculate_color(t_scene *scene, t_hit_record *rec,
 				t_material *material);
 
+/* Material fonksiyonları */
+t_material	create_material(t_color color);
+
 #endif
 

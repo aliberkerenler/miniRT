@@ -4,9 +4,11 @@
 static t_color	apply_ambient(t_scene *scene, t_material *material)
 {
 	t_color	ambient;
+	double	ka;
 
-	ambient = color_multiply(scene->ambient.color, material->albedo);
-	ambient = color_mul(ambient, scene->ambient.ratio * material->ambient);
+	ka = 0.1;
+	ambient = color_multiply(scene->ambient.color, material->color);
+	ambient = color_mul(ambient, scene->ambient.ratio * ka);
 	return (ambient);
 }
 static int is_in_shadow(t_scene *scene, t_vector point, t_vector light_dir, double light_distance)
@@ -28,15 +30,17 @@ static int is_in_shadow(t_scene *scene, t_vector point, t_vector light_dir, doub
     }
     return (0);  // Gölge yok
 }
-static t_color apply_diffuse(t_scene *scene, t_hit_record *rec, t_material *material)
+static t_color compute_lighting(t_scene *scene, t_hit_record *rec, t_material *material)
 {
     t_light     *light;
     t_vector    light_dir;
     double      light_distance;
     double      diff;
+    double		kd;
     t_color     diffuse;
     t_color     result;
 
+    kd = 0.9;
     result = color(0, 0, 0);
     light = scene->lights;
     while (light)
@@ -46,20 +50,20 @@ static t_color apply_diffuse(t_scene *scene, t_hit_record *rec, t_material *mate
         light_distance = vec3_length(to_light);
         light_dir = vec3_normalize(to_light);
         
-        // ✨ YENİ: Shadow kontrolü!
+        // Shadow kontrolü!
         if (is_in_shadow(scene, rec->point, light_dir, light_distance))
         {
             light = light->next;
-            continue;  // Bu ışık engelleniyor, bir sonrakine geç!
+            continue;
         }
         
-        // Lambert's law (eskisi gibi)
+        // Diffuse
         diff = vec3_dot(rec->normal, light_dir);
         if (diff < 0)
             diff = 0;
         
-        diffuse = color_multiply(light->color, material->albedo);
-        diffuse = color_mul(diffuse, diff * light->brightness * material->diffuse);
+        diffuse = color_multiply(light->color, material->color);
+        diffuse = color_mul(diffuse, diff * light->brightness * kd);
         result = color_add(result, diffuse);
         
         light = light->next;
@@ -70,12 +74,12 @@ static t_color apply_diffuse(t_scene *scene, t_hit_record *rec, t_material *mate
 t_color	calculate_color(t_scene *scene, t_hit_record *rec, t_material *material)
 {
 	t_color	ambient;
-	t_color	diffuse;
+	t_color	lighting;
 	t_color	final_color;
 
 	ambient = apply_ambient(scene, material);
-	diffuse = apply_diffuse(scene, rec, material);
-	final_color = color_add(ambient, diffuse);
+	lighting = compute_lighting(scene, rec, material);
+	final_color = color_add(ambient, lighting);
 	if (final_color.x > 1.0)
 		final_color.x = 1.0;
 	if (final_color.y > 1.0)

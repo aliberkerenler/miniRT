@@ -50,11 +50,59 @@ static double	get_valid_root(double *coeffs, double discriminant)
 	double	sqrtd;
 	double	root;
 
+	if (fabs(coeffs[0]) < 0.000001)
+		return (-1.0);
 	sqrtd = sqrt(discriminant);
 	root = (-coeffs[1] - sqrtd) / (2.0 * coeffs[0]);
 	if (root < 0.001)
 		root = (-coeffs[1] + sqrtd) / (2.0 * coeffs[0]);
 	return (root);
+}
+
+static bool	hit_cylinder_cap(t_cylinder *cy, t_ray *ray, t_hit_record *rec,
+			bool is_top)
+{
+	t_vector	cap_center;
+	t_vector	cap_normal;
+	t_vector	oc;
+	double		denom;
+	double		t;
+	t_vector	hit_point;
+	t_vector	to_hit;
+	double		dist_sq;
+
+	if (is_top)
+	{
+		cap_center = vec3_add(cy->center, vec3_mul(cy->axis, cy->height / 2.0));
+		cap_normal = cy->axis;
+	}
+	else
+	{
+		cap_center = vec3_sub(cy->center, vec3_mul(cy->axis, cy->height / 2.0));
+		cap_normal = vec3_mul(cy->axis, -1.0);
+	}
+	denom = vec3_dot(ray->direction, cap_normal);
+	if (fabs(denom) < 0.0001)
+		return (false);
+	oc = vec3_sub(cap_center, ray->origin);
+	t = vec3_dot(oc, cap_normal) / denom;
+	if (t < 0.001)
+		return (false);
+	hit_point = ray_at(*ray, t);
+	to_hit = vec3_sub(hit_point, cap_center);
+	dist_sq = vec3_length_squared(to_hit);
+	if (dist_sq > cy->radius * cy->radius)
+		return (false);
+	if (t < rec->t)
+	{
+		rec->t = t;
+		rec->point = hit_point;
+		rec->normal = cap_normal;
+		if (denom > 0)
+			rec->normal = vec3_negate(rec->normal);
+		return (true);
+	}
+	return (false);
 }
 
 bool	hit_cylinder(t_cylinder *cy, t_ray *ray, t_hit_record *rec)
@@ -64,19 +112,32 @@ bool	hit_cylinder(t_cylinder *cy, t_ray *ray, t_hit_record *rec)
 	double		discriminant;
 	double		root;
 	double		projection;
+	bool		hit_any;
 
+	if (cy->radius <= 0.0)
+		return (false);
+	rec->t = INFINITY;
+	hit_any = false;
 	oc = vec3_sub(ray->origin, cy->center);
 	calculate_coefficients(cy, ray, oc, coeffs);
 	discriminant = coeffs[1] * coeffs[1] - 4.0 * coeffs[0] * coeffs[2];
-	if (discriminant < 0)
-		return (false);
-	root = get_valid_root(coeffs, discriminant);
-	if (root < 0.001)
-		return (false);
-	rec->point = ray_at(*ray, root);
-	if (!check_cylinder_height(cy, rec->point, &projection))
-		return (false);
-	rec->t = root;
-	rec->normal = calculate_cylinder_normal(cy, rec->point, projection);
-	return (true);
+	if (discriminant >= 0)
+	{
+		root = get_valid_root(coeffs, discriminant);
+		if (root >= 0.001)
+		{
+			rec->point = ray_at(*ray, root);
+			if (check_cylinder_height(cy, rec->point, &projection))
+			{
+				rec->t = root;
+				rec->normal = calculate_cylinder_normal(cy, rec->point, projection);
+				hit_any = true;
+			}
+		}
+	}
+	if (hit_cylinder_cap(cy, ray, rec, true))
+		hit_any = true;
+	if (hit_cylinder_cap(cy, ray, rec, false))
+		hit_any = true;
+	return (hit_any);
 }

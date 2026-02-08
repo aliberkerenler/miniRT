@@ -1,0 +1,13 @@
+# Test: Silindire yandan bakış
+# Kamera X ekseninden silindire bakıyor
+# Silindir Y ekseni boyunca dikey
+
+A 0.3 255,255,255
+
+C 7,0,0 -1,0,0 80
+
+L 7,3,3 0.8 255,255,255
+
+cy 0,0,0 0,1,0 3 4 0,255,0
+
+pl 0,-3,0 0,1,0 100,100,100

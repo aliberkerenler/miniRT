@@ -1,0 +1,12 @@
+# Shadow Test Scene
+# A sphere casting a shadow on a plane
+
+A 0.1 255,255,255
+C 0,5,10 0,-0.5,-1 70
+L 0,10,0 0.8 255,255,255
+
+# Ground Plane
+pl 0,0,0 0,1,0 200,200,200
+
+# Sphere blocking the light
+sp 0,3,0 2.0 255,0,0
