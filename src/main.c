@@ -2,13 +2,6 @@
 #include "../include/render.h"
 #include "../include/parser.h"
 
-typedef struct s_data
-{
-	t_mlx		mlx;
-	t_image		img;
-	t_scene		*scene;
-}	t_data;
-
 static int	close_with_data(t_data *data)
 {
 	free_scene(data->scene);

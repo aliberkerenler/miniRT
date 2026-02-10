@@ -9,9 +9,10 @@ MLX = -L./minilibx-linux -lmlx -lXext -lX11 -lm
 LIBFT = -L./libft -lft
 
 SRCS = src/error.c src/main.c src/mlx_utils.c \
-       src/parser.c src/parser_utils.c src/parser_elements.c src/get_next_line.c \
+       src/parser.c src/parser_utils.c src/parser_elements.c \
+       src/parser_scene.c src/parser_objects.c src/get_next_line.c \
        src/render.c src/camera.c src/lighting.c src/intersect.c src/hit_cylinder.c \
-       src/material.c
+       src/cylinder_utils.c
 VEC_SRCS = src/vec3_create.c src/vec3_operations.c src/vec3_properties.c \
            src/color.c src/ray.c
 HIT_SRCS = src/hit_sphere.c src/hit_plane.c

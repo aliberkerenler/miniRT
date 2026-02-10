@@ -26,4 +26,3 @@ t_vector	vec3_negate(t_vector v)
 {
 	return (vec3(-v.x, -v.y, -v.z));
 }
-

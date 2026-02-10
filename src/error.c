@@ -22,4 +22,3 @@ void	free_mlx(t_mlx *mlx)
 		free(mlx->mlx_ptr);
 	}
 }
-

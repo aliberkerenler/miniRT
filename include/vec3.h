@@ -39,4 +39,3 @@ t_ray		ray(t_point origin, t_vector direction);
 t_point		ray_at(t_ray r, double t);
 
 #endif
-

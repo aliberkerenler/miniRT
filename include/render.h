@@ -4,6 +4,53 @@
 # include "project.h"
 # include "minirt.h"
 
+/* Camera calculation helper */
+typedef struct s_cam_calc
+{
+	double		focal_length;
+	double		viewport_height;
+	double		viewport_width;
+	double		theta;
+	double		h;
+	t_vector	forward;
+	t_vector	right;
+	t_vector	up;
+	t_vector	horizontal;
+	t_vector	vertical;
+	t_vector	upper_left;
+	t_vector	direction;
+	t_vector	world_up;
+}	t_cam_calc;
+
+/* Diffuse calculation helper */
+typedef struct s_diffuse_calc
+{
+	t_hit_record	*rec;
+	t_color			obj_color;
+	t_light			*light;
+	t_vector		light_dir;
+}	t_diffuse_calc;
+
+/* Cylinder cap calculation helper */
+typedef struct s_cap_data
+{
+	double		t;
+	double		denom;
+	t_vector	cap_center;
+	t_vector	cap_normal;
+}	t_cap_data;
+
+/* Quadratic equation helper */
+typedef struct s_quadratic
+{
+	double	a;
+	double	half_b;
+	double	c;
+	double	discriminant;
+	double	sqrtd;
+	double	root;
+}	t_quadratic;
+
 /* Image yapısı */
 typedef struct s_image
 {
@@ -15,6 +62,14 @@ typedef struct s_image
 	int		width;
 	int		height;
 }	t_image;
+
+/* Data container */
+typedef struct s_data
+{
+	t_mlx		mlx;
+	t_image		img;
+	t_scene		*scene;
+}	t_data;
 
 /* Render fonksiyonları */
 void		render_scene(t_mlx *mlx, t_image *img, t_scene *scene);
@@ -30,12 +85,16 @@ bool		hit_cylinder(t_cylinder *cylinder, t_ray *ray, t_hit_record *rec);
 bool		find_closest_hit(t_scene *scene, t_ray *ray, t_hit_record *rec,
 				t_object **hit_obj);
 
+/* Cylinder utility functions */
+bool		check_cylinder_height(t_cylinder *cy, t_vector hit_point,
+				double *proj);
+t_vector	calculate_cylinder_normal(t_cylinder *cy, t_vector hit_point,
+				double projection);
+void		calculate_coefficients(t_cylinder *cy, t_ray *ray,
+				t_vector oc, double *coeffs);
+
 /* Lighting fonksiyonları */
 t_color		calculate_color(t_scene *scene, t_hit_record *rec,
-				t_material *material);
-
-/* Material fonksiyonları */
-t_material	create_material(t_color color);
+				t_color obj_color);
 
 #endif
-

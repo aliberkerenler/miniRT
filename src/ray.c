@@ -13,4 +13,3 @@ t_point	ray_at(t_ray r, double t)
 {
 	return (vec3_add(r.origin, vec3_mul(r.direction, t)));
 }
-

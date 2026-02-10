@@ -22,4 +22,3 @@ bool	hit_plane(t_plane *plane, t_ray *ray, t_hit_record *rec)
 	rec->front_face = (denom < 0);
 	return (true);
 }
-

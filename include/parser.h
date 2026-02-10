@@ -15,6 +15,12 @@
 t_scene		*parse_scene(const char *filename);
 void		free_scene(t_scene *scene);
 void		parse_content(t_scene *scene, char *content);
+void		parse_ambient(t_scene *scene, char **tokens);
+void		parse_light(t_scene *scene, char **tokens);
+void		parse_camera(t_scene *scene, char **tokens);
+void		parse_sphere(t_scene *scene, char **tokens);
+void		parse_plane(t_scene *scene, char **tokens);
+void		parse_cylinder(t_scene *scene, char **tokens);
 
 /* Yardımcı fonksiyonlar */
 double		parse_double(const char *str);
@@ -23,4 +29,3 @@ t_color		parse_color(char **tokens, int *index);
 char		*get_next_line(int fd);
 
 #endif
-

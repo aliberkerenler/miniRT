@@ -31,4 +31,3 @@ int		close_window(t_mlx *mlx);
 int		handle_keypress(int keycode, t_mlx *mlx);
 
 #endif
-

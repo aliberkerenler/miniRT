@@ -44,4 +44,3 @@ t_color	parse_color(char **tokens, int *index)
 	(*index)++;
 	return (c);
 }
-

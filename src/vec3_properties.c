@@ -34,4 +34,3 @@ t_vector	vec3_normalize(t_vector v)
 		return (vec3_zero());
 	return (vec3_div(v, len));
 }
-

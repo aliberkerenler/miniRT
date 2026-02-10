@@ -80,4 +80,3 @@ void	free_scene(t_scene *scene)
 	}
 	free(scene);
 }
-

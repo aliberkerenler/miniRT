@@ -34,13 +34,6 @@ typedef struct s_hit_record
 	bool		front_face;
 }	t_hit_record;
 
-/* ========== Malzeme Yapısı ========== */
-
-typedef struct s_material
-{
-	t_color		color;
-}	t_material;
-
 /* ========== Obje Tipleri ========== */
 
 typedef enum e_object_type
@@ -56,7 +49,7 @@ typedef struct s_sphere
 {
 	t_point		center;
 	double		radius;
-	t_material	material;
+	t_color		color;
 }	t_sphere;
 
 /* ========== Düzlem Yapısı ========== */
@@ -65,7 +58,7 @@ typedef struct s_plane
 {
 	t_point		point;
 	t_vector	normal;
-	t_material	material;
+	t_color		color;
 }	t_plane;
 
 /* ========== Silindir Yapısı ========== */
@@ -76,7 +69,7 @@ typedef struct s_cylinder
 	t_vector	axis;
 	double		radius;
 	double		height;
-	t_material	material;
+	t_color		color;
 }	t_cylinder;
 
 /* ========== Genel Obje Yapısı ========== */

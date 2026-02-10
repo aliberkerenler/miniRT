@@ -28,4 +28,3 @@ int	handle_keypress(int keycode, t_mlx *mlx)
 		close_window(mlx);
 	return (0);
 }
-

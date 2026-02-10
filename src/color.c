@@ -20,24 +20,26 @@ t_color	color_multiply(t_color a, t_color b)
 	return (vec3(a.x * b.x, a.y * b.y, a.z * b.z));
 }
 
-static int	clamp(double value, int min, int max)
-{
-	if (value < min)
-		return (min);
-	if (value > max)
-		return (max);
-	return ((int)value);
-}
-
 int	color_to_int(t_color c)
 {
 	int	r;
 	int	g;
 	int	b;
 
-	r = clamp(c.x * 255.999, 0, 255);
-	g = clamp(c.y * 255.999, 0, 255);
-	b = clamp(c.z * 255.999, 0, 255);
+	r = (int)(c.x * 255.999);
+	if (r < 0)
+		r = 0;
+	if (r > 255)
+		r = 255;
+	g = (int)(c.y * 255.999);
+	if (g < 0)
+		g = 0;
+	if (g > 255)
+		g = 255;
+	b = (int)(c.z * 255.999);
+	if (b < 0)
+		b = 0;
+	if (b > 255)
+		b = 255;
 	return (r << 16 | g << 8 | b);
 }
-
