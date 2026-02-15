@@ -13,7 +13,7 @@ typedef struct s_cam_calc
 	double		theta;
 	double		h;
 	t_vector	forward;
-	t_vector	right;
+	t_vector	  right;
 	t_vector	up;
 	t_vector	horizontal;
 	t_vector	vertical;
@@ -75,8 +75,9 @@ typedef struct s_data
 void		render_scene(t_mlx *mlx, t_image *img, t_scene *scene);
 void		put_pixel_to_image(t_image *img, int x, int y, int color);
 
-/* Ray fonksiyonları */
-t_ray		get_camera_ray(t_camera *cam, double u, double v);
+/* Camera fonksiyonları */
+void		init_viewport(t_cam_calc *calc, t_camera *cam);
+t_ray		get_camera_ray(t_camera *cam, t_cam_calc *calc, double u, double v);
 
 /* Hit fonksiyonları */
 bool		hit_sphere(t_sphere *sphere, t_ray *ray, t_hit_record *rec);

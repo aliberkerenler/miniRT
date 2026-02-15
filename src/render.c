@@ -36,7 +36,8 @@ static t_color	ray_color(t_ray *ray, t_scene *scene)
 	return (color(0.1, 0.1, 0.1));
 }
 
-static void	render_pixel(t_scene *scene, t_image *img, int x, int y)
+static void	render_pixel(t_scene *scene, t_image *img, t_cam_calc *calc,
+			int x, int y)
 {
 	double	u;
 	double	v;
@@ -45,24 +46,26 @@ static void	render_pixel(t_scene *scene, t_image *img, int x, int y)
 
 	u = (double)x / (img->width - 1);
 	v = (double)y / (img->height - 1);
-	ray = get_camera_ray(&scene->camera, u, v);
+	ray = get_camera_ray(&scene->camera, calc, u, v);
 	pixel_color = ray_color(&ray, scene);
 	put_pixel_to_image(img, x, y, color_to_int(pixel_color));
 }
 
 void	render_scene(t_mlx *mlx, t_image *img, t_scene *scene)
 {
-	int		x;
-	int		y;
+	int			x;
+	int			y;
+	t_cam_calc	calc;
 
-	(void)mlx;
+	(void)mlx; // BOŞ
+	init_viewport(&calc, &scene->camera);
 	y = 0;
 	while (y < img->height)
 	{
 		x = 0;
 		while (x < img->width)
 		{
-			render_pixel(scene, img, x, y);
+			render_pixel(scene, img, &calc, x, y);
 			x++;
 		}
 		y++;

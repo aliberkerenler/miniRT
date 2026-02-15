@@ -7,7 +7,6 @@ static int	close_with_data(t_data *data)
 	free_scene(data->scene);
 	free_mlx(&data->mlx);
 	exit(0);
-	return (0);
 }
 
 static int	handle_key_with_data(int keycode, t_data *data)

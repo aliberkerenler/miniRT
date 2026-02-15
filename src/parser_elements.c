@@ -44,7 +44,7 @@ void	parse_content(t_scene *scene, char *content)
 	i = 0;
 	while (lines[i])
 	{
-		if (lines[i][0] && lines[i][0] != '#')
+		if (lines[i][0] && lines[i][0] != '#') // Yorum satirlarini handle'lamak icin ama gereksiz bence
 		{
 			tokens = ft_split(lines[i], ' ');
 			if (tokens && tokens[0])

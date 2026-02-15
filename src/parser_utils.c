@@ -4,7 +4,7 @@
 
 double	parse_double(const char *str)
 {
-	return (atof(str));
+	return (atof(str)); // Atof izni yok. ft_atof lazım.
 }
 
 t_vector	parse_vector(char **tokens, int *index)
@@ -22,7 +22,7 @@ t_vector	parse_vector(char **tokens, int *index)
 	free(coords[1]);
 	free(coords[2]);
 	free(coords);
-	(*index)++;
+	(*index)++; // Burada artirmak mantikli mi ?
 	return (v);
 }
 
