@@ -1,7 +1,7 @@
 #include "../include/render.h"
 #include "../include/vec3.h"
 
-static void	apply_diffuse(t_diffuse_calc *dc, t_color *result);
+static void	apply_diffuse(t_diffuse_calc *dc, t_color *result); // ?
 
 static t_color	apply_ambient(t_scene *scene, t_color obj_color)
 {

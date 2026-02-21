@@ -44,7 +44,7 @@ typedef struct s_cap_data
 typedef struct s_quadratic
 {
 	double	a;
-	double	half_b;
+	double	b;
 	double	c;
 	double	discriminant;
 	double	sqrtd;
