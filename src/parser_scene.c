@@ -2,24 +2,18 @@
 #include "../include/minirt.h"
 #include "../include/vec3.h"
 
-static t_light	*create_light(t_scene *scene, char **tokens, int *i)
+static int	create_light(t_scene *scene, char **tokens, int *i)
 {
-	t_light	*light;
-
-	light = malloc(sizeof(t_light));
-	if (!light)
-		exit_error("Memory allocation failed", ERR_MALLOC);
-	light->position = parse_vector(tokens, i);
-	light->brightness = parse_double(tokens[(*i)++]);
-	if (light->brightness < 0.0 || light->brightness > 1.0)
+	scene->light.position = parse_vector(tokens, i);
+	scene->light.brightness = parse_double(tokens[(*i)++]);
+	if (scene->light.brightness < 0.0 || scene->light.brightness > 1.0)
 	{
-		free(light);
 		scene->error = 1;
 		scene->err_msg = "Light brightness must be in range [0.0,1.0]";
-		return (NULL);
+		return (0);
 	}
-	light->color = parse_color(tokens, i);
-	return (light);
+	(*i)++;
+	return (1);
 }
 
 void	parse_ambient(t_scene *scene, char **tokens)
@@ -52,7 +46,6 @@ void	parse_ambient(t_scene *scene, char **tokens)
 
 void	parse_light(t_scene *scene, char **tokens)
 {
-	t_light	*light;
 	int		i;
 
 	i = 1;
@@ -68,11 +61,8 @@ void	parse_light(t_scene *scene, char **tokens)
 		scene->err_msg = "Invalid light format";
 		return ;
 	}
-	light = create_light(scene, tokens, &i);
-	if (!light)
+	if (!create_light(scene, tokens, &i))
 		return ;
-	light->next = scene->lights;
-	scene->lights = light;
 	scene->has_light = 1;
 }
 
@@ -96,10 +86,10 @@ void	parse_camera(t_scene *scene, char **tokens)
 	scene->camera.position = parse_vector(tokens, &i);
 	scene->camera.orientation = vec3_normalize(parse_vector(tokens, &i));
 	scene->camera.fov = parse_double(tokens[i]);
-	if (scene->camera.fov < 0 || scene->camera.fov > 180)
+	if (scene->camera.fov < 0 || scene->camera.fov >= 180)
 	{
 		scene->error = 1;
-		scene->err_msg = "FOV must be in range [0,180]";
+		scene->err_msg = "FOV must be in range [0,180)";
 		return ;
 	}
 	scene->has_camera = 1;

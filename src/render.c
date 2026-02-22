@@ -51,12 +51,11 @@ static void	render_pixel(t_scene *scene, t_image *img, t_cam_calc *calc,
 	put_pixel_to_image(img, coords[0], coords[1], color_to_int(pixel_color));
 }
 
-void	render_scene(t_mlx *mlx, t_image *img, t_scene *scene)
+void	render_scene(t_image *img, t_scene *scene)
 {
 	int			coords[2];
 	t_cam_calc	calc;
 
-	(void)mlx;
 	init_viewport(&calc, &scene->camera);
 	coords[1] = 0;
 	while (coords[1] < img->height)

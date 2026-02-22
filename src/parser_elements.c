@@ -30,6 +30,11 @@ static void	parse_line_tokens(t_scene *scene, char **tokens)
 		parse_plane(scene, tokens);
 	else if (ft_strncmp(tokens[0], "cy", 3) == 0)
 		parse_cylinder(scene, tokens);
+	else
+	{
+		scene->error = 1;
+		scene->err_msg = "Unknown element identifier";
+	}
 }
 
 static void	replace_tabs(char *line)
@@ -68,7 +73,7 @@ void	parse_content(t_scene *scene, char *content)
 	i = 0;
 	while (lines[i])
 	{
-		if (lines[i][0] && lines[i][0] != '#')
+		if (lines[i][0])
 			process_line(scene, lines[i]);
 		free(lines[i++]);
 		if (scene->error)

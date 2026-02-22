@@ -14,8 +14,3 @@ t_vector	vec3_zero(void)
 {
 	return (vec3(0.0, 0.0, 0.0));
 }
-
-t_vector	vec3_one(void)
-{
-	return (vec3(1.0, 1.0, 1.0));
-}

@@ -2,7 +2,7 @@
 
 double	vec3_length_squared(t_vector v)
 {
-	return (v.x * v.x + v.y * v.y + v.z * v.z); // dot ile çözülebilir
+	return (v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
 double	vec3_length(t_vector v)

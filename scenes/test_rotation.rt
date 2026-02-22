@@ -1,9 +1,0 @@
-# Rotation Test
-# Rotated Cylinder (45 degrees roughly)
-
-A 0.2 255,255,255
-C 0,0,15 0,0,-1 70
-L 5,5,10 0.8 255,255,255
-
-# Cylinder pointing diagonal (1,1,0 normalized is approx 0.7,0.7,0)
-cy 0,0,0 0.707,0.707,0 2.0 6.0 0,0,255

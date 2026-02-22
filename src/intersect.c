@@ -21,7 +21,7 @@ bool	find_closest_hit(t_scene *scene, t_ray *ray, t_hit_record *rec,
 	double			closest;
 
 	hit_anything = false;
-	closest = 1e30;
+	closest = INFINITY;
 	obj = scene->objects;
 	while (obj)
 	{

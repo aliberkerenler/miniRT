@@ -49,7 +49,6 @@ static void	init_scene(t_scene *scene)
 	scene->camera.fov = 90.0;
 	scene->ambient.ratio = 0.0;
 	scene->ambient.color = color(1, 1, 1);
-	scene->lights = NULL;
 	scene->objects = NULL;
 	scene->has_ambient = 0;
 	scene->has_camera = 0;
@@ -90,8 +89,6 @@ void	free_scene(t_scene *scene)
 {
 	t_object	*obj;
 	t_object	*next;
-	t_light		*light;
-	t_light		*next_light;
 
 	if (!scene)
 		return ;
@@ -102,13 +99,6 @@ void	free_scene(t_scene *scene)
 		free(obj->data);
 		free(obj);
 		obj = next;
-	}
-	light = scene->lights;
-	while (light)
-	{
-		next_light = light->next;
-		free(light);
-		light = next_light;
 	}
 	free(scene);
 }
