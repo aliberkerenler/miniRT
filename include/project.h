@@ -31,7 +31,6 @@ typedef struct s_hit_record
 	t_point		point;
 	t_vector	normal;
 	double		t;
-	bool		front_face;
 }	t_hit_record;
 
 /* ========== Obje Tipleri ========== */
@@ -116,6 +115,11 @@ typedef struct s_scene
 	t_ambient	ambient;
 	t_light		*lights;
 	t_object	*objects;
+	int			has_ambient;
+	int			has_camera;
+	int			has_light;
+	int			error;
+	const char	*err_msg;
 }	t_scene;
 
 #endif

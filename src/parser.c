@@ -3,6 +3,20 @@
 #include "../include/vec3.h"
 #include <unistd.h>
 
+static void	validate_filename(const char *filename)
+{
+	int	len;
+	int	fd;
+
+	len = ft_strlen(filename);
+	if (len < 4 || ft_strncmp(filename + len - 3, ".rt", 4) != 0)
+		exit_error("Invalid file extension, expected .rt", ERR_PARSE_FILE);
+	fd = open(filename, O_RDONLY);
+	if (fd < 0)
+		exit_error("Cannot open .rt file", ERR_PARSE_FILE);
+	close(fd);
+}
+
 static char	*read_file(const char *filename)
 {
 	int		fd;
@@ -37,13 +51,20 @@ static void	init_scene(t_scene *scene)
 	scene->ambient.color = color(1, 1, 1);
 	scene->lights = NULL;
 	scene->objects = NULL;
+	scene->has_ambient = 0;
+	scene->has_camera = 0;
+	scene->has_light = 0;
+	scene->error = 0;
+	scene->err_msg = NULL;
 }
 
 t_scene	*parse_scene(const char *filename)
 {
-	t_scene	*scene;
-	char	*content;
+	t_scene		*scene;
+	char		*content;
+	const char	*msg;
 
+	validate_filename(filename);
 	scene = malloc(sizeof(t_scene));
 	if (!scene)
 		exit_error("Memory allocation failed", ERR_MALLOC);
@@ -51,6 +72,17 @@ t_scene	*parse_scene(const char *filename)
 	content = read_file(filename);
 	parse_content(scene, content);
 	free(content);
+	if (scene->error)
+	{
+		msg = scene->err_msg;
+		free_scene(scene);
+		exit_error(msg, ERR_PARSE_FORMAT);
+	}
+	if (!scene->has_ambient || !scene->has_camera || !scene->has_light)
+	{
+		free_scene(scene);
+		exit_error("Missing required elements (A, C, L)", ERR_PARSE_FORMAT);
+	}
 	return (scene);
 }
 

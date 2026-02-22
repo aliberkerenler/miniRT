@@ -6,11 +6,9 @@ static void	apply_diffuse(t_diffuse_calc *dc, t_color *result); // ?
 static t_color	apply_ambient(t_scene *scene, t_color obj_color)
 {
 	t_color	ambient;
-	double	ka;
 
-	ka = 0.1;
 	ambient = color_multiply(scene->ambient.color, obj_color);
-	ambient = color_mul(ambient, scene->ambient.ratio * ka);
+	ambient = color_mul(ambient, scene->ambient.ratio);
 	return (ambient);
 }
 

@@ -4,6 +4,8 @@
 
 static int	close_with_data(t_data *data)
 {
+	if (data->img.img_ptr)
+		mlx_destroy_image(data->mlx.mlx_ptr, data->img.img_ptr);
 	free_scene(data->scene);
 	free_mlx(&data->mlx);
 	exit(0);
@@ -25,6 +27,8 @@ int	main(int argc, char **argv)
 	data.scene = parse_scene(argv[1]);
 	init_mlx(&data.mlx);
 	data.img.img_ptr = mlx_new_image(data.mlx.mlx_ptr, WIN_WIDTH, WIN_HEIGHT);
+	if (!data.img.img_ptr)
+		exit_error("Failed to create image", ERR_MLX_INIT);
 	data.img.addr = mlx_get_data_addr(data.img.img_ptr,
 			&data.img.bits_per_pixel, &data.img.line_length, &data.img.endian);
 	data.img.width = WIN_WIDTH;

@@ -3,23 +3,6 @@
 #include <math.h>
 
 static bool	check_cap_intersection(t_cylinder *cy, t_ray *ray,
-				t_hit_record *rec, t_cap_data *data);
-
-static double	get_valid_root(double *coeffs, double discriminant)
-{
-	double	sqrtd;
-	double	root;
-
-	if (fabs(coeffs[0]) < 0.000001)
-		return (-1.0);
-	sqrtd = sqrt(discriminant);
-	root = (-coeffs[1] - sqrtd) / (2.0 * coeffs[0]);
-	if (root < 0.001)
-		root = (-coeffs[1] + sqrtd) / (2.0 * coeffs[0]);
-	return (root);
-}
-
-static bool	check_cap_intersection(t_cylinder *cy, t_ray *ray,
 			t_hit_record *rec, t_cap_data *data)
 {
 	t_vector	hit_point;
@@ -71,19 +54,11 @@ static bool	hit_cylinder_cap(t_cylinder *cy, t_ray *ray,
 	return (true);
 }
 
-static bool	check_body_hit(t_cylinder *cy, t_ray *ray,
-			t_hit_record *rec, t_vector oc)
+static bool	try_cylinder_root(t_cylinder *cy, t_ray *ray,
+			t_hit_record *rec, double root)
 {
-	double	coeffs[3];
-	double	discriminant;
-	double	root;
 	double	projection;
 
-	calculate_coefficients(cy, ray, oc, coeffs);
-	discriminant = coeffs[1] * coeffs[1] - 4.0 * coeffs[0] * coeffs[2];
-	if (discriminant < 0)
-		return (false);
-	root = get_valid_root(coeffs, discriminant);
 	if (root < 0.001)
 		return (false);
 	rec->point = ray_at(*ray, root);
@@ -91,7 +66,29 @@ static bool	check_body_hit(t_cylinder *cy, t_ray *ray,
 		return (false);
 	rec->t = root;
 	rec->normal = calculate_cylinder_normal(cy, rec->point, projection);
+	if (vec3_dot(ray->direction, rec->normal) > 0)
+		rec->normal = vec3_negate(rec->normal);
 	return (true);
+}
+
+static bool	check_body_hit(t_cylinder *cy, t_ray *ray,
+			t_hit_record *rec, t_vector oc)
+{
+	double	coeffs[3];
+	double	discriminant;
+	double	sqrtd;
+	double	root;
+
+	calculate_coefficients(cy, ray, oc, coeffs);
+	discriminant = coeffs[1] * coeffs[1] - 4.0 * coeffs[0] * coeffs[2];
+	if (discriminant < 0 || fabs(coeffs[0]) < 0.000001)
+		return (false);
+	sqrtd = sqrt(discriminant);
+	root = (-coeffs[1] - sqrtd) / (2.0 * coeffs[0]);
+	if (try_cylinder_root(cy, ray, rec, root))
+		return (true);
+	root = (-coeffs[1] + sqrtd) / (2.0 * coeffs[0]);
+	return (try_cylinder_root(cy, ray, rec, root));
 }
 
 bool	hit_cylinder(t_cylinder *cy, t_ray *ray, t_hit_record *rec)

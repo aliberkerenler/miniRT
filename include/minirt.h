@@ -27,7 +27,5 @@ void	exit_error(const char *message, int error_code);
 void	free_mlx(t_mlx *mlx);
 
 int		init_mlx(t_mlx *mlx);
-int		close_window(t_mlx *mlx);
-int		handle_keypress(int keycode, t_mlx *mlx);
 
 #endif

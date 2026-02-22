@@ -14,17 +14,3 @@ int	init_mlx(t_mlx *mlx)
 	}
 	return (0);
 }
-
-int	close_window(t_mlx *mlx)
-{
-	free_mlx(mlx);
-	exit(0);
-	return (0);
-}
-
-int	handle_keypress(int keycode, t_mlx *mlx)
-{
-	if (keycode == KEY_ESC)
-		close_window(mlx);
-	return (0);
-}

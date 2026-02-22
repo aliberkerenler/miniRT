@@ -32,10 +32,34 @@ static void	parse_line_tokens(t_scene *scene, char **tokens)
 		parse_cylinder(scene, tokens);
 }
 
+static void	replace_tabs(char *line)
+{
+	int	i;
+
+	i = 0;
+	while (line[i])
+	{
+		if (line[i] == '\t')
+			line[i] = ' ';
+		i++;
+	}
+}
+
+static void	process_line(t_scene *scene, char *line)
+{
+	char	**tokens;
+
+	replace_tabs(line);
+	tokens = ft_split(line, ' ');
+	if (tokens && tokens[0])
+		parse_line_tokens(scene, tokens);
+	if (tokens)
+		free_tokens(tokens);
+}
+
 void	parse_content(t_scene *scene, char *content)
 {
 	char	**lines;
-	char	**tokens;
 	int		i;
 
 	lines = ft_split(content, '\n');
@@ -44,16 +68,13 @@ void	parse_content(t_scene *scene, char *content)
 	i = 0;
 	while (lines[i])
 	{
-		if (lines[i][0] && lines[i][0] != '#') // Yorum satirlarini handle'lamak icin ama gereksiz bence
-		{
-			tokens = ft_split(lines[i], ' ');
-			if (tokens && tokens[0])
-			{
-				parse_line_tokens(scene, tokens);
-				free_tokens(tokens);
-			}
-		}
+		if (lines[i][0] && lines[i][0] != '#')
+			process_line(scene, lines[i]);
 		free(lines[i++]);
+		if (scene->error)
+			break ;
 	}
+	while (lines[i])
+		free(lines[i++]);
 	free(lines);
 }

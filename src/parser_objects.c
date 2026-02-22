@@ -3,6 +3,21 @@
 #include "../include/vec3.h"
 #include "../include/render.h"
 
+static t_cylinder	*new_cylinder(char **tokens, int *i)
+{
+	t_cylinder	*cy;
+
+	cy = malloc(sizeof(t_cylinder));
+	if (!cy)
+		exit_error("Memory allocation failed", ERR_MALLOC);
+	cy->center = parse_vector(tokens, i);
+	cy->axis = vec3_normalize(parse_vector(tokens, i));
+	cy->radius = parse_double(tokens[(*i)++]) / 2.0;
+	cy->height = parse_double(tokens[(*i)++]);
+	cy->color = parse_color(tokens, i);
+	return (cy);
+}
+
 void	parse_sphere(t_scene *scene, char **tokens)
 {
 	t_sphere	*sphere;
@@ -11,7 +26,11 @@ void	parse_sphere(t_scene *scene, char **tokens)
 
 	i = 1;
 	if (!tokens[1] || !tokens[2] || !tokens[3])
-		exit_error("Invalid sphere format", ERR_PARSE_SPHERE);
+	{
+		scene->error = 1;
+		scene->err_msg = "Invalid sphere format";
+		return ;
+	}
 	sphere = malloc(sizeof(t_sphere));
 	if (!sphere)
 		exit_error("Memory allocation failed", ERR_MALLOC);
@@ -35,7 +54,11 @@ void	parse_plane(t_scene *scene, char **tokens)
 
 	i = 1;
 	if (!tokens[1] || !tokens[2] || !tokens[3])
-		exit_error("Invalid plane format", ERR_PARSE_FORMAT);
+	{
+		scene->error = 1;
+		scene->err_msg = "Invalid plane format";
+		return ;
+	}
 	plane = malloc(sizeof(t_plane));
 	if (!plane)
 		exit_error("Memory allocation failed", ERR_MALLOC);
@@ -59,15 +82,12 @@ void	parse_cylinder(t_scene *scene, char **tokens)
 
 	i = 1;
 	if (!tokens[1] || !tokens[2] || !tokens[3] || !tokens[4] || !tokens[5])
-		exit_error("Invalid cylinder format", ERR_PARSE_FORMAT);
-	cylinder = malloc(sizeof(t_cylinder));
-	if (!cylinder)
-		exit_error("Memory allocation failed", ERR_MALLOC);
-	cylinder->center = parse_vector(tokens, &i);
-	cylinder->axis = vec3_normalize(parse_vector(tokens, &i));
-	cylinder->radius = parse_double(tokens[i++]) / 2.0;
-	cylinder->height = parse_double(tokens[i++]);
-	cylinder->color = parse_color(tokens, &i);
+	{
+		scene->error = 1;
+		scene->err_msg = "Invalid cylinder format";
+		return ;
+	}
+	cylinder = new_cylinder(tokens, &i);
 	obj = malloc(sizeof(t_object));
 	if (!obj)
 		exit_error("Memory allocation failed", ERR_MALLOC);

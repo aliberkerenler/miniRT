@@ -37,37 +37,36 @@ static t_color	ray_color(t_ray *ray, t_scene *scene)
 }
 
 static void	render_pixel(t_scene *scene, t_image *img, t_cam_calc *calc,
-			int x, int y)
+			int *coords)
 {
 	double	u;
 	double	v;
 	t_ray	ray;
 	t_color	pixel_color;
 
-	u = (double)x / (img->width - 1);
-	v = (double)y / (img->height - 1);
+	u = (double)coords[0] / (img->width - 1);
+	v = (double)coords[1] / (img->height - 1);
 	ray = get_camera_ray(&scene->camera, calc, u, v);
 	pixel_color = ray_color(&ray, scene);
-	put_pixel_to_image(img, x, y, color_to_int(pixel_color));
+	put_pixel_to_image(img, coords[0], coords[1], color_to_int(pixel_color));
 }
 
 void	render_scene(t_mlx *mlx, t_image *img, t_scene *scene)
 {
-	int			x;
-	int			y;
+	int			coords[2];
 	t_cam_calc	calc;
 
-	(void)mlx; // BOŞ
+	(void)mlx;
 	init_viewport(&calc, &scene->camera);
-	y = 0;
-	while (y < img->height)
+	coords[1] = 0;
+	while (coords[1] < img->height)
 	{
-		x = 0;
-		while (x < img->width)
+		coords[0] = 0;
+		while (coords[0] < img->width)
 		{
-			render_pixel(scene, img, &calc, x, y);
-			x++;
+			render_pixel(scene, img, &calc, coords);
+			coords[0]++;
 		}
-		y++;
+		coords[1]++;
 	}
 }

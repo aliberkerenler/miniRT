@@ -1,7 +1,7 @@
 #include "../include/render.h"
 #include "../include/vec3.h"
 
-bool	hit_sphere(t_sphere *sphere, t_ray *ray, t_hit_record *rec) // duzetildi.
+bool	hit_sphere(t_sphere *sphere, t_ray *ray, t_hit_record *rec)
 {
 	t_vector	oc;
 	t_quadratic	q;
@@ -22,5 +22,7 @@ bool	hit_sphere(t_sphere *sphere, t_ray *ray, t_hit_record *rec) // duzetildi.
 	rec->t = q.root;
 	rec->point = ray_at(*ray, rec->t);
 	rec->normal = vec3_normalize(vec3_sub(rec->point, sphere->center));
+	if (vec3_dot(ray->direction, rec->normal) > 0)
+		rec->normal = vec3_negate(rec->normal);
 	return (true);
 }

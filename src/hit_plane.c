@@ -19,6 +19,5 @@ bool	hit_plane(t_plane *plane, t_ray *ray, t_hit_record *rec)
 	rec->normal = plane->normal;
 	if (denom > 0)
 		rec->normal = vec3_negate(rec->normal);
-	rec->front_face = (denom < 0);
 	return (true);
 }
