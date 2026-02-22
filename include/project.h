@@ -81,6 +81,7 @@ typedef struct s_light
 {
 	t_point			position;
 	double			brightness;
+	t_color			color;
 }	t_light;
 
 typedef struct s_scene

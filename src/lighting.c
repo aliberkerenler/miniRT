@@ -1,8 +1,6 @@
 #include "../include/render.h"
 #include "../include/vec3.h"
 
-static void	apply_diffuse(t_diffuse_calc *dc, t_color *result);
-
 static t_color	apply_ambient(t_scene *scene, t_color obj_color)
 {
 	t_color	ambient;
@@ -29,6 +27,21 @@ static int	check_shadow(t_scene *scene, t_vector point,
 	return (0);
 }
 
+static void	apply_diffuse(t_diffuse_calc *dc, t_color *result)
+{
+	double	diff;
+	double	kd;
+	t_color	diffuse;
+
+	kd = 0.9;
+	diff = vec3_dot(dc->rec->normal, dc->light_dir);
+	if (diff < 0)
+		diff = 0;
+	diffuse = dc->obj_color;
+	diffuse = color_mul(diffuse, diff * dc->light->brightness * kd);
+	*result = color_add(*result, diffuse);
+}
+
 static void	process_light(t_scene *scene, t_hit_record *rec,
 				t_color obj_color, t_color *result)
 {
@@ -46,21 +59,6 @@ static void	process_light(t_scene *scene, t_hit_record *rec,
 		dc.light = &scene->light;
 		apply_diffuse(&dc, result);
 	}
-}
-
-static void	apply_diffuse(t_diffuse_calc *dc, t_color *result)
-{
-	double	diff;
-	double	kd;
-	t_color	diffuse;
-
-	kd = 0.9;
-	diff = vec3_dot(dc->rec->normal, dc->light_dir);
-	if (diff < 0)
-		diff = 0;
-	diffuse = dc->obj_color;
-	diffuse = color_mul(diffuse, diff * dc->light->brightness * kd);
-	*result = color_add(*result, diffuse);
 }
 
 t_color	calculate_color(t_scene *scene, t_hit_record *rec, t_color obj_color)

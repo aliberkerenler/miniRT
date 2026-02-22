@@ -204,11 +204,7 @@ The `scenes/` directory contains test files for each evaluation criterion:
 ### Documentation & References
 
 - [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) - Peter Shirley's excellent introduction to ray tracing
-- [Scratchapixel](https://www.scratchapixel.com/) - Comprehensive computer graphics tutorials
-- [Ray-Sphere Intersection](https://en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection) - Mathematical foundation
-- [Phong Reflection Model](https://en.wikipedia.org/wiki/Phong_reflection_model) - Lighting model explanation
-- [MinilibX Documentation](https://harm-smits.github.io/42docs/libs/minilibx) - Graphics library reference
-
+- [Lineer Algebra](https://youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&si=tVKeAuZbzJjFQBcX) - Essence of linear algebra 3Blue1Brown
 ### AI Usage
 
 AI assistance (GitHub Copilot with Claude) was used in this project for:

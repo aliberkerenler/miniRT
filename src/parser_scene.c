@@ -12,7 +12,7 @@ static int	create_light(t_scene *scene, char **tokens, int *i)
 		scene->err_msg = "Light brightness must be in range [0.0,1.0]";
 		return (0);
 	}
-	(*i)++;
+	scene->light.color = parse_color(tokens, i);
 	return (1);
 }
 
