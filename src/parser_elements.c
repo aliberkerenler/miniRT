@@ -3,19 +3,6 @@
 #include "../include/vec3.h"
 #include "../include/render.h"
 
-static void	free_tokens(char **tokens)
-{
-	int	i;
-
-	i = 0;
-	while (tokens[i])
-	{
-		free(tokens[i]);
-		i++;
-	}
-	free(tokens);
-}
-
 static void	parse_line_tokens(t_scene *scene, char **tokens)
 {
 	if (ft_strncmp(tokens[0], "A", 2) == 0)
@@ -59,7 +46,7 @@ static void	process_line(t_scene *scene, char *line)
 	if (tokens && tokens[0])
 		parse_line_tokens(scene, tokens);
 	if (tokens)
-		free_tokens(tokens);
+		free_split_arr(tokens);
 }
 
 void	parse_content(t_scene *scene, char *content)

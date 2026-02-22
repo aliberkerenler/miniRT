@@ -9,7 +9,6 @@
 # define ERR_MLX_INIT 2
 # define ERR_MLX_WINDOW 3
 # define ERR_ARGS 4
-# define ERR_FILE 5
 
 # define WIN_WIDTH 800
 # define WIN_HEIGHT 600

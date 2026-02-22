@@ -7,8 +7,8 @@ MLX = -L./minilibx-linux -lmlx -lXext -lX11 -lm
 LIBFT = -L./libft -lft
 
 SRCS = src/error.c src/main.c src/mlx_utils.c \
-       src/parser.c src/parser_utils.c src/parser_elements.c \
-       src/parser_scene.c src/parser_objects.c src/get_next_line.c \
+       src/parser.c src/parser_utils.c src/parser_utils2.c src/parser_elements.c \
+       src/parser_scene.c src/parser_objects.c src/parser_plane.c src/get_next_line.c \
        src/render.c src/camera.c src/lighting.c src/intersect.c src/hit_cylinder.c \
        src/cylinder_utils.c \
        src/vec3_create.c src/vec3_operations.c src/vec3_properties.c \

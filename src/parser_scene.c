@@ -5,7 +5,7 @@
 static int	create_light(t_scene *scene, char **tokens, int *i)
 {
 	scene->light.position = parse_vector(tokens, i);
-	scene->light.brightness = parse_double(tokens[(*i)++]);
+	scene->light.brightness = ft_atof(tokens[(*i)++]);
 	if (scene->light.brightness < 0.0 || scene->light.brightness > 1.0)
 	{
 		scene->error = 1;
@@ -33,7 +33,7 @@ void	parse_ambient(t_scene *scene, char **tokens)
 		scene->err_msg = "Invalid ambient format";
 		return ;
 	}
-	scene->ambient.ratio = parse_double(tokens[i++]);
+	scene->ambient.ratio = ft_atof(tokens[i++]);
 	if (scene->ambient.ratio < 0.0 || scene->ambient.ratio > 1.0)
 	{
 		scene->error = 1;
@@ -85,7 +85,7 @@ void	parse_camera(t_scene *scene, char **tokens)
 	}
 	scene->camera.position = parse_vector(tokens, &i);
 	scene->camera.orientation = vec3_normalize(parse_vector(tokens, &i));
-	scene->camera.fov = parse_double(tokens[i]);
+	scene->camera.fov = ft_atof(tokens[i]);
 	if (scene->camera.fov < 0 || scene->camera.fov >= 180)
 	{
 		scene->error = 1;
