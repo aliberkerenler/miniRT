@@ -1,36 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
+/*   parser_validate4.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/22 15:06:50 by aerenler          #+#    #+#             */
-/*   Updated: 2026/02/22 15:06:51 by aerenler         ###   ########.fr       */
+/*   Created: 2026/02/27 16:00:00 by aerenler          #+#    #+#             */
+/*   Updated: 2026/02/27 15:48:26 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minirt.h"
+#include "../../include/parser.h"
+#include "../../include/minirt.h"
 
-void	exit_error(const char *message, int error_code)
+int	check_duplicate(t_scene *scene, int has_flag, const char *msg)
 {
-	if (message)
-	{
-		ft_putstr_fd("Error\n", 2);
-		ft_putendl_fd((char *)message, 2);
-	}
-	exit(error_code);
+	if (has_flag)
+		return (set_err(scene, msg));
+	return (1);
 }
 
-void	free_mlx(t_mlx *mlx)
+int	check_token_count(t_scene *scene, char **tokens,
+		int expected, const char *msg)
 {
-	if (!mlx)
-		return ;
-	if (mlx->win_ptr)
-		mlx_destroy_window(mlx->mlx_ptr, mlx->win_ptr);
-	if (mlx->mlx_ptr)
-	{
-		mlx_destroy_display(mlx->mlx_ptr);
-		free(mlx->mlx_ptr);
-	}
+	if (count_tokens(tokens) != expected)
+		return (set_err(scene, msg));
+	return (1);
 }

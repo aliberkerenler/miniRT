@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/22 15:07:25 by aerenler          #+#    #+#             */
+/*   Updated: 2026/02/27 16:20:34 by aerenler         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minirt.h"
 #include "../include/render.h"
 #include "../include/parser.h"
@@ -35,7 +47,11 @@ int	main(int argc, char **argv)
 	init_mlx(&data.mlx);
 	data.img.img_ptr = mlx_new_image(data.mlx.mlx_ptr, WIN_WIDTH, WIN_HEIGHT);
 	if (!data.img.img_ptr)
+	{
+		free_scene(data.scene);
+		free_mlx(&data.mlx);
 		exit_error("Failed to create image", ERR_MLX_INIT);
+	}
 	data.img.addr = mlx_get_data_addr(data.img.img_ptr,
 			&data.img.bits_per_pixel, &data.img.line_length, &data.img.endian);
 	data.img.width = WIN_WIDTH;

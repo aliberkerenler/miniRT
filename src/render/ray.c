@@ -1,36 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error.c                                            :+:      :+:    :+:   */
+/*   ray.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/22 15:06:50 by aerenler          #+#    #+#             */
-/*   Updated: 2026/02/22 15:06:51 by aerenler         ###   ########.fr       */
+/*   Created: 2026/02/22 15:08:47 by aerenler          #+#    #+#             */
+/*   Updated: 2026/02/22 15:08:48 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minirt.h"
+#include "../../include/vec3.h"
 
-void	exit_error(const char *message, int error_code)
+t_ray	ray(t_point origin, t_vector direction)
 {
-	if (message)
-	{
-		ft_putstr_fd("Error\n", 2);
-		ft_putendl_fd((char *)message, 2);
-	}
-	exit(error_code);
+	t_ray	r;
+
+	r.origin = origin;
+	r.direction = direction;
+	return (r);
 }
 
-void	free_mlx(t_mlx *mlx)
+t_point	ray_at(t_ray r, double t)
 {
-	if (!mlx)
-		return ;
-	if (mlx->win_ptr)
-		mlx_destroy_window(mlx->mlx_ptr, mlx->win_ptr);
-	if (mlx->mlx_ptr)
-	{
-		mlx_destroy_display(mlx->mlx_ptr);
-		free(mlx->mlx_ptr);
-	}
+	return (vec3_add(r.origin, vec3_mul(r.direction, t)));
 }

@@ -1,10 +1,8 @@
-*This project has been created as part of the 42 curriculum by aerenler and ualkan.*
+*This project has been created as part of the 42 curriculum by aerenler, ualkan.*
 
 # miniRT
 
 A minimal ray tracing engine written in C, capable of rendering 3D scenes with spheres, planes, and cylinders using the Phong reflection model.
-
-![Ray Tracing Example](https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Ray_trace_diagram.svg/300px-Ray_trace_diagram.svg.png)
 
 ---
 
@@ -125,61 +123,54 @@ cy 5,0,-5 0,1,0 3 10 0,0,255
 
 ```
 miniRT/
-├── include/          # Header files
-│   ├── minirt.h      # Main definitions and structs
-│   ├── parser.h      # Parser function prototypes
-│   ├── render.h      # Rendering structures and functions
-│   ├── vec3.h        # Vector mathematics
-│   └── project.h     # Project-wide type definitions
-├── src/                    # Source files
-│   ├── main.c              # Entry point and event hooks
-│   ├── error.c             # Error handling and cleanup
-│   ├── mlx_utils.c         # MiniLibX initialization
-│   ├── parser.c            # Scene file reading and validation
-│   ├── parser_elements.c   # Line tokenization and dispatch
-│   ├── parser_scene.c      # Ambient, camera, light parsing
-│   ├── parser_objects.c    # Sphere and cylinder parsing
-│   ├── parser_plane.c      # Plane parsing
-│   ├── parser_utils.c      # Vector and color parsing
-│   ├── parser_utils2.c     # ft_atof and utility helpers
-│   ├── get_next_line.c     # File line reader
-│   ├── render.c            # Main rendering loop
-│   ├── camera.c            # Camera ray generation
-│   ├── ray.c               # Ray constructor and utilities
-│   ├── intersect.c         # Closest hit detection
-│   ├── hit_sphere.c        # Ray-sphere intersection
-│   ├── hit_plane.c         # Ray-plane intersection
-│   ├── hit_cylinder.c      # Ray-cylinder intersection
-│   ├── cylinder_utils.c    # Cylinder math helpers
-│   ├── lighting.c          # Phong lighting and shadows
-│   ├── color.c             # Color operations
-│   ├── vec3_create.c       # Vector constructors
-│   ├── vec3_operations.c   # Vector arithmetic (+, -, *, /)
-│   └── vec3_properties.c   # Vector length, dot, cross, normalize
-├── scenes/           # Example scene files
-├── libft/            # Custom C library
-├── minilibx-linux/   # Graphics library
+├── include/                    # Header files
+│   ├── minirt.h                # Main definitions and structs
+│   ├── parser.h                # Parser function prototypes
+│   ├── render.h                # Rendering structures and functions
+│   ├── vec3.h                  # Vector mathematics
+│   └── project.h               # Project-wide type definitions
+├── src/                        # Source files
+│   ├── main.c                  # Entry point and event hooks
+│   ├── error.c                 # Error handling and cleanup
+│   ├── mlx_utils.c             # MiniLibX initialization
+│   ├── parser/                 # Scene file parsing
+│   │   ├── parser.c            # File reading and validation
+│   │   ├── parser_elements.c   # Line tokenization and dispatch
+│   │   ├── parser_scene.c      # Ambient, camera, light parsing
+│   │   ├── parser_light.c      # Light element parsing
+│   │   ├── parser_objects.c    # Sphere parsing
+│   │   ├── parser_plane.c      # Plane parsing
+│   │   ├── parser_cylinder.c   # Cylinder parsing
+│   │   ├── parser_utils2.c     # ft_atof and utility helpers
+│   │   ├── parser_validate.c   # Input format validation
+│   │   ├── parser_validate2.c  # Safe parsing (vector, color)
+│   │   ├── parser_validate3.c  # Value and token validators
+│   │   ├── parser_validate4.c  # Duplicate and count checks
+│   │   └── get_next_line.c     # File line reader
+│   ├── render/                 # Rendering pipeline
+│   │   ├── render.c            # Main rendering loop
+│   │   ├── camera.c            # Camera ray generation
+│   │   ├── ray.c               # Ray constructor and utilities
+│   │   ├── intersect.c         # Closest hit detection
+│   │   └── lighting.c          # Phong lighting and shadows
+│   ├── geometry/               # Ray-object intersections
+│   │   ├── hit_sphere.c        # Ray-sphere intersection
+│   │   ├── hit_plane.c         # Ray-plane intersection
+│   │   ├── hit_cylinder.c      # Ray-cylinder intersection
+│   │   └── cylinder_utils.c    # Cylinder math helpers
+│   └── math/                   # Vector and color math
+│       ├── vec3_create.c       # Vector constructors
+│       ├── vec3_operations.c   # Vector arithmetic (+, -, *, /)
+│       ├── vec3_properties.c   # Length, dot, cross, normalize
+│       └── color.c             # Color operations
+├── scenes/                     # Test scene files (.rt)
+├── libft/                      # Custom C library
+├── minilibx-linux/             # Graphics library (X11)
 ├── Makefile
 └── README.md
 ```
 
 ---
-
-## Testing
-
-### Error Handling Tests
-
-Run the error handling test suite:
-```bash
-./test_errors.sh
-```
-
-This tests 32 different error scenarios including:
-- Invalid file extensions
-- Missing required elements
-- Duplicate elements
-- Invalid value ranges
-- Malformed input
 
 ### Evaluation Scenes
 
@@ -209,10 +200,9 @@ The `scenes/` directory contains test files for each evaluation criterion:
 
 AI assistance (GitHub Copilot with Claude) was used in this project for:
 
-- **Code refactoring:** Splitting large functions to comply with 42 norm (25 lines max, 5 functions per file)
+- **Bug detection:** Finding logical issues such as missing NULL checks, resource leaks, and formula inconsistencies
 - **Error handling:** Generating comprehensive error test cases and validation logic
 - **Documentation:** Creating this README and inline comments
-- **Debugging:** Identifying duplicate functions and unused code
 - **Scene files:** Generating test scene configurations for evaluation criteria
 
 All AI-generated code was reviewed, tested, and modified as needed to ensure correctness and compliance with project requirements.

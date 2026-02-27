@@ -6,14 +6,20 @@ CFLAGS = -Wall -Wextra -Werror -I./minilibx-linux -I./libft
 MLX = -L./minilibx-linux -lmlx -lXext -lX11 -lm
 LIBFT = -L./libft -lft
 
-SRCS = src/error.c src/main.c src/mlx_utils.c \
-       src/parser.c src/parser_utils.c src/parser_utils2.c src/parser_elements.c \
-       src/parser_scene.c src/parser_objects.c src/parser_plane.c src/get_next_line.c \
-       src/render.c src/camera.c src/lighting.c src/intersect.c src/hit_cylinder.c \
-       src/cylinder_utils.c \
-       src/vec3_create.c src/vec3_operations.c src/vec3_properties.c \
-       src/color.c src/ray.c \
-       src/hit_sphere.c src/hit_plane.c
+SRCS = src/main.c src/error.c src/mlx_utils.c \
+       src/parser/parser.c src/parser/parser_utils2.c \
+       src/parser/parser_elements.c src/parser/parser_scene.c \
+       src/parser/parser_objects.c src/parser/parser_plane.c \
+       src/parser/parser_cylinder.c src/parser/parser_light.c \
+       src/parser/get_next_line.c src/parser/parser_validate.c \
+       src/parser/parser_validate2.c src/parser/parser_validate3.c \
+       src/parser/parser_validate4.c \
+       src/render/render.c src/render/camera.c src/render/lighting.c \
+       src/render/intersect.c src/render/ray.c \
+       src/geometry/hit_sphere.c src/geometry/hit_plane.c \
+       src/geometry/hit_cylinder.c src/geometry/cylinder_utils.c \
+       src/math/vec3_create.c src/math/vec3_operations.c \
+       src/math/vec3_properties.c src/math/color.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -34,7 +40,6 @@ $(NAME): $(OBJS)
 clean:
 	rm -f $(OBJS)
 	make -C libft clean
-	@make -C minilibx-linux clean
 
 fclean: clean
 	rm -f $(NAME)
