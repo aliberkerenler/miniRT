@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_cylinder.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aerenler <aerenler@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 16:00:00 by aerenler          #+#    #+#             */
-/*   Updated: 2026/02/27 15:27:07 by aerenler         ###   ########.fr       */
+/*   Updated: 2026/02/27 17:23:16 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static int	check_cylinder_axis(t_cylinder *cy, t_scene *scene)
 	{
 		free(cy);
 		scene->error = 1;
-		scene->err_msg = "Cylinder axis vector cannot be zero";
+		scene->err_msg = "Cylinder axis vector can't be zero";
 		return (0);
 	}
 	cy->axis = vec3_normalize(cy->axis);
@@ -45,7 +45,7 @@ static int	parse_cy_dims(t_cylinder *cy, char **tokens, int *i,
 	{
 		free(cy);
 		scene->error = 1;
-		scene->err_msg = "Cylinder dims must be positive";
+		scene->err_msg = "Cylinder diameter must be positive";
 		return (0);
 	}
 	cy->radius = diameter / 2.0;

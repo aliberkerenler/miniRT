@@ -141,7 +141,7 @@ miniRT/
 │   │   ├── parser_objects.c    # Sphere parsing
 │   │   ├── parser_plane.c      # Plane parsing
 │   │   ├── parser_cylinder.c   # Cylinder parsing
-│   │   ├── parser_utils2.c     # ft_atof and utility helpers
+│   │   ├── parser_utils.c      # ft_atof and utility helpers
 │   │   ├── parser_validate.c   # Input format validation
 │   │   ├── parser_validate2.c  # Safe parsing (vector, color)
 │   │   ├── parser_validate3.c  # Value and token validators

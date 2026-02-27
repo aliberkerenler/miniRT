@@ -7,7 +7,7 @@ MLX = -L./minilibx-linux -lmlx -lXext -lX11 -lm
 LIBFT = -L./libft -lft
 
 SRCS = src/main.c src/error.c src/mlx_utils.c \
-       src/parser/parser.c src/parser/parser_utils2.c \
+       src/parser/parser.c src/parser/parser_utils.c \
        src/parser/parser_elements.c src/parser/parser_scene.c \
        src/parser/parser_objects.c src/parser/parser_plane.c \
        src/parser/parser_cylinder.c src/parser/parser_light.c \
