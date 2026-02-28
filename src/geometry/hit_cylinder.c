@@ -21,7 +21,7 @@ static bool	check_cap_intersection(t_cylinder *cy, t_ray *ray,
 	t_vector	to_hit;
 	double		dist_sq;
 
-	if (data->t < 0.001)
+	if (data->t < EPSILON)
 		return (false);
 	hit_point = ray_at(*ray, data->t);
 	to_hit = vec3_sub(hit_point, data->cap_center);
@@ -57,7 +57,7 @@ static bool	hit_cylinder_cap(t_cylinder *cy, t_ray *ray,
 	else
 		data.cap_normal = vec3_negate(cy->axis);
 	data.denom = vec3_dot(ray->direction, data.cap_normal);
-	if (fabs(data.denom) < 0.0001)
+	if (fabs(data.denom) < EPSILON)
 		return (false);
 	oc = vec3_sub(data.cap_center, ray->origin);
 	data.t = vec3_dot(oc, data.cap_normal) / data.denom;
@@ -71,7 +71,7 @@ static bool	try_cylinder_root(t_cylinder *cy, t_ray *ray,
 {
 	double	projection;
 
-	if (root < 0.001)
+	if (root < EPSILON)
 		return (false);
 	rec->point = ray_at(*ray, root);
 	if (!check_cylinder_height(cy, rec->point, &projection))

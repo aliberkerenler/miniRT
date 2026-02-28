@@ -29,11 +29,11 @@ static int	check_shadow(t_scene *scene, t_hit_record *rec,
 	t_hit_record	temp_rec;
 	t_object		*temp_obj;
 
-	shadow_ray.origin = vec3_add(rec->point, vec3_mul(rec->normal, 0.001));
+	shadow_ray.origin = vec3_add(rec->point, vec3_mul(rec->normal, EPSILON));
 	shadow_ray.direction = light_dir;
 	if (find_closest_hit(scene, &shadow_ray, &temp_rec, &temp_obj))
 	{
-		if (temp_rec.t < light_dist - 0.001)
+		if (temp_rec.t < light_dist - (EPSILON * 2.0))
 			return (1);
 	}
 	return (0);

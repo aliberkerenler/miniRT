@@ -27,9 +27,9 @@ bool	hit_sphere(t_sphere *sphere, t_ray *ray, t_hit_record *rec)
 		return (false);
 	q.sqrtd = sqrt(q.discriminant);
 	q.root = (-q.b - q.sqrtd) / (2.0 * q.a);
-	if (q.root < 0.001)
+	if (q.root < EPSILON)
 		q.root = (-q.b + q.sqrtd) / (2.0 * q.a);
-	if (q.root < 0.001)
+	if (q.root < EPSILON)
 		return (false);
 	rec->t = q.root;
 	rec->point = ray_at(*ray, rec->t);

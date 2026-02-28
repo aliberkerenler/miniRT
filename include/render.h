@@ -16,6 +16,8 @@
 # include "project.h"
 # include "minirt.h"
 
+# define EPSILON 0.0001
+
 typedef struct s_cam_calc
 {
 	double		focal_length;
