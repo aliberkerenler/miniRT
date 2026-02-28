@@ -23,10 +23,10 @@ void	init_viewport(t_cam_calc *calc, t_camera *cam)
 	calc->viewport_width = calc->viewport_height
 		* (WIN_WIDTH / (double)WIN_HEIGHT);
 	calc->forward = cam->orientation;
-	if (fabs(calc->forward.y) > 0.999)
-		calc->world_up = vec3(0, 0, 1);
-	else
+	if (fabs(calc->forward.z) > 0.999)
 		calc->world_up = vec3(0, 1, 0);
+	else
+		calc->world_up = vec3(0, 0, 1);
 	calc->right = vec3_normalize(vec3_cross(calc->forward, calc->world_up));
 	calc->up = vec3_normalize(vec3_cross(calc->right, calc->forward));
 	calc->horizontal = vec3_mul(calc->right, calc->viewport_width);

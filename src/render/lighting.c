@@ -22,14 +22,14 @@ static t_color	apply_ambient(t_scene *scene, t_color obj_color)
 	return (ambient);
 }
 
-static int	check_shadow(t_scene *scene, t_vector point,
+static int	check_shadow(t_scene *scene, t_hit_record *rec,
 				t_vector light_dir, double light_dist)
 {
 	t_ray			shadow_ray;
 	t_hit_record	temp_rec;
 	t_object		*temp_obj;
 
-	shadow_ray.origin = vec3_add(point, vec3_mul(light_dir, 0.001));
+	shadow_ray.origin = vec3_add(rec->point, vec3_mul(rec->normal, 0.001));
 	shadow_ray.direction = light_dir;
 	if (find_closest_hit(scene, &shadow_ray, &temp_rec, &temp_obj))
 	{
@@ -64,7 +64,7 @@ static void	process_light(t_scene *scene, t_hit_record *rec,
 	to_light = vec3_sub(scene->light.position, rec->point);
 	light_distance = vec3_length(to_light);
 	dc.light_dir = vec3_normalize(to_light);
-	if (!check_shadow(scene, rec->point, dc.light_dir, light_distance))
+	if (!check_shadow(scene, rec, dc.light_dir, light_distance))
 	{
 		dc.rec = rec;
 		dc.obj_color = obj_color;

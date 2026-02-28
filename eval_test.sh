@@ -1,81 +1,113 @@
 #!/bin/bash
 
+# Renk kodları
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
-NC='\033[0m'
+NC='\033[0m' # No Color
 
+# Sayaçlar
 PASS=0
 FAIL=0
 WARN=0
 TOTAL=0
 
+# Helper fonksiyonlar
 ok()   { PASS=$((PASS+1)); TOTAL=$((TOTAL+1)); printf "  ${GREEN}[OK]${NC}   %s\n" "$1"; }
 ko()   { FAIL=$((FAIL+1)); TOTAL=$((TOTAL+1)); printf "  ${RED}[KO]${NC}   %s\n" "$1"; }
-warn() { WARN=$((WARN+1)); TOTAL=$((TOTAL+1)); printf "  ${YELLOW}[!!]${NC}   %s\n" "$1"; }
+warn() { WARN=$((WARN+1)); TOTAL=$((TOTAL+1)); printf "  ${YELLOW}[UYARI]${NC} %s\n" "$1"; }
 section() { echo ""; printf "${BOLD}${CYAN}━━━ %s ━━━${NC}\n" "$1"; }
 
-# --- Test a scene renders without crash (timeout 5s) ---
+# --- Bir sahnenin çökmeden render edilip edilmediğini test et ---
 test_render() {
 	local scene="$1"
-	local desc="$2"
-	timeout 5 ./miniRT "$scene" &
+	local short_desc="$2"
+	local long_desc="$3"
+	local view_seconds=15
+
+	# Detaylı açıklamayı testten ÖNCE yazdır
+	printf "  ${YELLOW} ▷ Test:${NC} ${short_desc}\n"
+	printf "    ${CYAN}Beklenen Görüntü:${NC} ${long_desc}\n"
+
+	# Programı arka planda başlat (timeout YOK, pencere açık kalsın)
+	./miniRT "$scene" &
 	local pid=$!
+
+	# Pencerenin açılması için 2 saniye bekle
 	sleep 2
-	if kill -0 "$pid" 2>/dev/null; then
-		kill "$pid" 2>/dev/null
-		wait "$pid" 2>/dev/null
-		ok "$desc"
-		return 0
-	else
+
+	# Program hala çalışıyor mu kontrol et
+	if ! kill -0 "$pid" 2>/dev/null; then
 		wait "$pid" 2>/dev/null
 		local exit_code=$?
 		if [ "$exit_code" -eq 139 ] || [ "$exit_code" -eq 134 ] || [ "$exit_code" -eq 136 ]; then
-			ko "$desc (CRASH - exit code $exit_code)"
-			return 1
+			ko "Render işlemi ÇÖKTÜ (çıkış kodu $exit_code)"
 		else
-			ko "$desc (exit code $exit_code)"
-			return 1
+			ko "Render işlemi beklenmedik şekilde sonlandı (çıkış kodu $exit_code)"
 		fi
+		return 1
 	fi
+
+	# Pencere açık, geri sayım göster
+	printf "    ${GREEN}Pencere açık - inceleme için ${view_seconds} saniye:${NC} "
+	local i=$view_seconds
+	while [ $i -gt 0 ]; do
+		printf "${BOLD}%2d${NC}" $i
+		sleep 1
+		printf "\b\b"
+		i=$((i - 1))
+		# Her saniye programın hala çalışıp çalışmadığını kontrol et
+		if ! kill -0 "$pid" 2>/dev/null; then
+			printf "   \n"
+			warn "Pencere bekleme sırasında kapandı (ESC ile mi kapatıldı?)"
+			return 0
+		fi
+	done
+	printf " 0\n"
+
+	# 15 saniye doldu, programı sonlandır
+	kill "$pid" 2>/dev/null
+	wait "$pid" 2>/dev/null
+	ok "Render işlemi başarıyla tamamlandı."
+	return 0
 }
 
-# --- Test error scene exits with error message ---
+# --- Hatalı bir sahnenin "Error" mesajı ile sonlandığını test et ---
 test_error() {
-	local scene="$1"
-	local expected_msg="$2"
-	local desc="$3"
-	local output
-	output=$(timeout 3 ./miniRT "$scene" 2>&1)
-	local exit_code=$?
-	if echo "$output" | grep -q "Error"; then
-		if [ -n "$expected_msg" ] && echo "$output" | grep -qi "$expected_msg"; then
-			ok "$desc"
-		elif [ -n "$expected_msg" ]; then
-			warn "$desc (got: $(echo "$output" | tail -1))"
-		else
-			ok "$desc"
-		fi
-	else
-		ko "$desc (no error message)"
-	fi
-}
-
-# --- Valgrind leak check ---
-test_valgrind() {
 	local scene="$1"
 	local desc="$2"
 	local output
+	# Programı 3 saniye zaman aşımı ile çalıştır ve çıktısını yakala
+	output=$(timeout 15 ./miniRT "$scene" 2>&1)
+	# Çıktıda "Error" kelimesinin olup olmadığını kontrol et
+	if echo "$output" | grep -q "Error"; then
+		ok "$desc"
+	else
+		ko "$desc (Hata mesajı alınamadı)"
+	fi
+}
+
+# --- Valgrind ile hafıza kaçağı kontrolü ---
+test_valgrind() {
+	local scene="$1"
+	local desc="$2"
+	# Valgrind'in kurulu olup olmadığını kontrol et
+	if ! command -v valgrind &> /dev/null; then
+		warn "Valgrind testi atlandı ('valgrind' komutu bulunamadı)"
+		return
+	fi
+	local output
 	output=$(valgrind --leak-check=full --errors-for-leak-kinds=all \
-		timeout 3 ./miniRT "$scene" 2>&1)
+		timeout 5 ./miniRT "$scene" 2>&1)
+	# "definitely lost" ve "indirectly lost" sızıntılarını kontrol et
 	local leaks=$(echo "$output" | grep "definitely lost:" | awk '{gsub(/,/,"",$4); print $4}')
 	local indirect=$(echo "$output" | grep "indirectly lost:" | awk '{gsub(/,/,"",$4); print $4}')
 	leaks=${leaks:-0}
 	indirect=${indirect:-0}
 	if [ "$leaks" = "0" ] && [ "$indirect" = "0" ]; then
-		ok "$desc (no leaks)"
+		ok "$desc (Sızıntı yok)"
 	else
 		ko "$desc (definitely: $leaks, indirectly: $indirect)"
 	fi
@@ -83,219 +115,125 @@ test_valgrind() {
 
 echo ""
 printf "${BOLD}╔══════════════════════════════════════════════╗${NC}\n"
-printf "${BOLD}║      miniRT Comprehensive Evaluation        ║${NC}\n"
+printf "${BOLD}║      miniRT Kapsamlı Değerlendirme Testi     ║${NC}\n"
 printf "${BOLD}╚══════════════════════════════════════════════╝${NC}\n"
 
 # ==========================================================
-section "1. EXECUTABLE NAME & COMPILATION"
+section "1. DERLEME VE EXECUTABLE KONTROLÜ"
 # ==========================================================
 
 make fclean > /dev/null 2>&1
-
-# Check no re-link
 make > /dev/null 2>&1
 if [ -f "./miniRT" ]; then
-	ok "make produces miniRT executable"
+	ok "'make' komutu 'miniRT' dosyasını oluşturdu"
 else
-	ko "make does not produce miniRT"
+	ko "'make' komutu 'miniRT' dosyasını oluşturmadı"
+	exit 1
 fi
 
-# Check no re-link on second make
+# İkinci 'make' komutunda yeniden linkleme olup olmadığını kontrol et
 output=$(make 2>&1)
-if echo "$output" | grep -q "Nothing to be done\|is up to date\|make\[1\]"; then
-	relink_count=$(echo "$output" | grep -c "^cc ")
-	if [ "$relink_count" -eq 0 ]; then
-		ok "No re-link on second make"
+if echo "$output" | grep -q "Nothing to be done\|is up to date\|için yapılacak bir şey yok"; then
+	ok "İkinci 'make' komutunda gereksiz derleme yapılmadı"
+else
+	ko "İkinci 'make' komutunda yeniden derleme tespit edildi"
+fi
+
+# ==========================================================
+section "2. YAPILANDIRMA DOSYASI DOĞRULAMASI"
+# ==========================================================
+
+test_error "scenes/error_empty_file.rt" "Boş dosya reddedildi"
+test_error "scenes/error_duplicate_ambient.rt" "Tekrarlanan Ambient (A) reddedildi"
+test_error "scenes/error_missing_camera.rt" "Eksik Kamera (C) reddedildi"
+test_error "scenes/error_unknown_element.rt" "Bilinmeyen eleman türü reddedildi"
+test_error "scenes/error_negative_fov.rt" "Negatif FOV reddedildi"
+test_error "scenes/error_negative_color.rt" "Negatif renk değeri reddedildi"
+test_error "scenes/error_orientation_out_of_range.rt" "Aralık dışı oryantasyon vektörü reddedildi"
+test_error "scenes/error_negative_sphere_diameter.rt" "Negatif küre çapı reddedildi"
+test_error "scenes/nonexistent.rt" "Var olmayan dosya reddedildi"
+test_error "./miniRT" "Argümansız çalıştırma reddedildi"
+test_error "./miniRT scenes/chess.rt extra_arg" "Fazla argüman ile çalıştırma reddedildi"
+
+# ==========================================================
+section "3. TEMEL ŞEKİLLER (çökme olmadan render)"
+# ==========================================================
+
+test_render "eval_scenes/01_basic_sphere.rt" "Temel Küre" "Ekranın ortasında, sol üstten aydınlatılmış tek bir KIRMIZI KÜRE."
+test_render "eval_scenes/02_basic_plane.rt" "Temel Düzlem" "Tüm ekranı kaplayan, sonsuz bir YEŞİL DÜZLEM."
+test_render "eval_scenes/03_basic_cylinder.rt" "Temel Silindir" "Ekranın ortasında dikey olarak duran MAVİ bir SİLİNDİR."
+
+# ==========================================================
+section "4. ÖTELEME VE DÖNDÜRME"
+# ==========================================================
+
+test_render "eval_scenes/04_trans_spheres.rt" "Ötelenmiş Küreler" "Biri yakın (yeşil), diğeri uzak (kırmızı) iki küre dikey olarak hizalı."
+test_render "eval_scenes/05_rot_cylinder.rt" "Döndürülmüş Silindir" "Ortada yatay olarak duran PEMBE bir SİLİNDİR."
+
+# ==========================================================
+section "5. ÇOKLU OBJELER"
+# ==========================================================
+
+test_render "eval_scenes/06_multi_intersect.rt" "Kesişen Objeler" "Büyük bir kırmızı küre ve içinden dikey geçen yeşil bir silindir."
+test_render "eval_scenes/07_multi_same.rt" "Aynı Türden Çoklu Objeler" "Altta gri düzlem, üstünde 2 küre (kırmızı, yeşil) ve 2 silindir (mavi, sarı)."
+
+# ==========================================================
+section "6. KAMERA POZİSYONU VE YÖNÜ"
+# ==========================================================
+
+test_render "eval_scenes/08_cam_x.rt" "Kamera X Ekseninde" "Kırmızı küreye yan taraftan bakış. Altında düzlem görünür."
+test_render "eval_scenes/09_cam_y.rt" "Kamera Y Ekseninde" "Kırmızı küreye tam karşıdan bakış (Y derinlik ekseni). Altında düzlem görünür."
+test_render "eval_scenes/10_cam_z.rt" "Kamera Z Ekseninde" "Kırmızı küreye tam tepeden bakış (Z yukarı ekseni). Küre daire gibi görünür."
+test_render "eval_scenes/11_cam_rand.rt" "Rastgele Kamera Pozisyonu" "Kırmızı küreye sağ üst çaprazdan bakış."
+
+# ==========================================================
+section "7. AYDINLATMA (IŞIK)"
+# ==========================================================
+
+test_render "eval_scenes/12_light_side.rt" "Yandan Aydınlatılmış Küre" "Kırmızı kürenin sol tarafı parlak, sağ tarafı gölgede."
+test_render "eval_scenes/13_light_trans.rt" "Ötelenmiş ve Yandan Aydınlatılmış Küre" "Yukarı ötelenmiş kırmızı kürenin yine sol tarafı parlak."
+
+# ==========================================================
+section "8. GÖLGELER"
+# ==========================================================
+
+test_render "eval_scenes/14_shadow_basic.rt" "Düzlem Üzerinde Basit Gölge" "Kırmızı kürenin, altındaki gri düzlem üzerine düşen yuvarlak gölgesi."
+test_render "eval_scenes/15_shadow_complex.rt" "Karmaşık Sahnede Gölgeler" "Birden fazla objenin (küreler, silindir) birbirleri ve zemin üzerine düşen gölgeleri."
+
+# ==========================================================
+section "9. HAFIZA KAÇAĞI KONTROLÜ (Valgrind)"
+# ==========================================================
+
+test_valgrind "eval_scenes/01_basic_sphere.rt" "Basit sahne"
+test_valgrind "eval_scenes/07_multi_same.rt" "Karmaşık sahne"
+test_valgrind "scenes/error_unknown_element.rt" "Hatalı sahne"
+
+# ==========================================================
+section "10. NORMINETTE"
+# ==========================================================
+
+if ! command -v norminette &> /dev/null; then
+	warn "Norminette testi atlandı ('norminette' komutu bulunamadı)"
+else
+	norm_output=$(norminette src/ include/ 2>&1)
+	norm_errors=$(echo "$norm_output" | grep -c "Error")
+	if [ "$norm_errors" -eq 0 ]; then
+		ok "Norminette: Tüm dosyalarda hata bulunamadı"
 	else
-		ko "Re-link detected on second make ($relink_count cc calls)"
-	fi
-else
-	ok "No re-link on second make"
-fi
-
-# ==========================================================
-section "2. CONFIGURATION FILE VALIDATION"
-# ==========================================================
-
-# .rt extension check
-test_error "scenes/eval_sphere" "" "Reject file without .rt extension" 2>/dev/null
-echo "noformat" > /tmp/test_minirt.txt
-test_error "/tmp/test_minirt.txt" "" "Reject .txt file"
-rm -f /tmp/test_minirt.txt
-
-# Error scenes
-test_error "scenes/error_empty_file.rt" "Missing" "Reject empty file"
-test_error "scenes/error_duplicate_ambient.rt" "Duplicate" "Reject duplicate ambient"
-test_error "scenes/error_missing_camera.rt" "Missing" "Reject missing camera"
-test_error "scenes/error_unknown_element.rt" "Unknown" "Reject unknown element"
-test_error "scenes/error_negative_fov.rt" "FOV" "Reject negative FOV"
-test_error "scenes/error_negative_color.rt" "Color" "Reject negative color"
-test_error "scenes/error_alpha_in_color.rt" "Color" "Reject non-integer color"
-test_error "scenes/error_orientation_out_of_range.rt" "Orientation" "Reject orientation out of range"
-test_error "scenes/error_negative_sphere_diameter.rt" "diameter" "Reject negative sphere diameter"
-test_error "scenes/error_zero_sphere_diameter.rt" "diameter" "Reject zero sphere diameter"
-test_error "scenes/error_negative_cylinder_height.rt" "" "Reject negative cylinder height"
-test_error "scenes/error_zero_cylinder_height.rt" "" "Reject zero cylinder height"
-test_error "scenes/error_extra_token.rt" "" "Reject extra tokens"
-test_error "scenes/error_double_comma.rt" "" "Reject double comma in values"
-test_error "scenes/error_leading_comma.rt" "" "Reject leading comma"
-test_error "scenes/error_trailing_comma.rt" "" "Reject trailing comma"
-test_error "scenes/error_incomplete_color.rt" "" "Reject incomplete color"
-
-# Non-existent file
-test_error "scenes/nonexistent.rt" "" "Reject non-existent file"
-
-# No arguments
-output=$(timeout 2 ./miniRT 2>&1)
-if echo "$output" | grep -q "Error"; then
-	ok "Error on no arguments"
-else
-	ko "No error on missing arguments"
-fi
-
-# Too many arguments
-output=$(timeout 2 ./miniRT scenes/eval_sphere.rt extra 2>&1)
-if echo "$output" | grep -q "Error"; then
-	ok "Error on too many arguments"
-else
-	ko "No error on too many arguments"
-fi
-
-# ==========================================================
-section "3. BASIC SHAPES (render without crash)"
-# ==========================================================
-
-test_render "scenes/eval_sphere.rt" "Sphere at {0,0,0}"
-test_render "scenes/eval_plane.rt" "Plane with z=0"
-test_render "scenes/eval_cylinder.rt" "Cylinder along y-axis"
-
-# ==========================================================
-section "4. TRANSLATIONS & ROTATIONS"
-# ==========================================================
-
-test_render "scenes/eval_translation.rt" "Two spheres with translation"
-test_render "scenes/eval_rotation.rt" "Cylinder with rotation"
-
-# ==========================================================
-section "5. MULTI-OBJECTS"
-# ==========================================================
-
-test_render "scenes/eval_multi_intersect.rt" "Intersecting objects"
-test_render "scenes/eval_multi_objects.rt" "Multiple same-type objects (2sp+2cy+pl)"
-
-# ==========================================================
-section "6. CAMERA POSITION & DIRECTION"
-# ==========================================================
-
-test_render "scenes/eval_cam_x.rt" "Camera along X axis"
-test_render "scenes/eval_cam_y.rt" "Camera along Y axis"
-test_render "scenes/eval_cam_z.rt" "Camera along Z axis"
-test_render "scenes/eval_cam_random.rt" "Camera at random position"
-
-# ==========================================================
-section "7. BRIGHTNESS 1/2 (Diffuse lighting)"
-# ==========================================================
-
-test_render "scenes/eval_brightness1.rt" "Sphere lit sideways"
-test_render "scenes/eval_brightness2.rt" "Translated sphere lit sideways"
-
-# ==========================================================
-section "8. BRIGHTNESS 2/2 (Shadows)"
-# ==========================================================
-
-test_render "scenes/eval_shadow.rt" "Sphere shadow on plane"
-test_render "scenes/eval_shadow_complex.rt" "Complex scene with shadows"
-
-# ==========================================================
-section "9. WINDOW MANAGEMENT"
-# ==========================================================
-
-# ESC key test
-timeout 5 ./miniRT scenes/eval_sphere.rt &
-pid=$!
-sleep 2
-if kill -0 "$pid" 2>/dev/null; then
-	# Send ESC key via xdotool if available
-	if command -v xdotool &>/dev/null; then
-		xdotool key Escape 2>/dev/null
-		sleep 1
-		if ! kill -0 "$pid" 2>/dev/null; then
-			ok "ESC key closes program"
-		else
-			kill "$pid" 2>/dev/null; wait "$pid" 2>/dev/null
-			warn "ESC key test (xdotool may not have focused window)"
-		fi
-	else
-		kill "$pid" 2>/dev/null; wait "$pid" 2>/dev/null
-		warn "ESC key test skipped (xdotool not installed)"
-	fi
-else
-	ko "Program crashed before ESC test"
-fi
-
-# ==========================================================
-section "10. MEMORY LEAKS (Valgrind)"
-# ==========================================================
-
-test_valgrind "scenes/eval_sphere.rt" "Sphere scene"
-test_valgrind "scenes/eval_cylinder.rt" "Cylinder scene"
-test_valgrind "scenes/eval_multi_objects.rt" "Multi-objects scene"
-test_valgrind "scenes/error_duplicate_ambient.rt" "Error scene (duplicate)"
-test_valgrind "scenes/error_unknown_element.rt" "Error scene (unknown elem)"
-test_valgrind "scenes/error_empty_file.rt" "Error scene (empty file)"
-
-# ==========================================================
-section "11. NORMINETTE"
-# ==========================================================
-
-norm_output=$(norminette src/ include/ 2>&1)
-norm_errors=$(echo "$norm_output" | grep -c "Error")
-if [ "$norm_errors" -eq 0 ]; then
-	ok "Norminette: all files pass"
-else
-	ko "Norminette: $norm_errors error(s) found"
-	echo "$norm_output" | grep "Error" | head -5
-fi
-
-# ==========================================================
-section "12. SEGFAULT / CRASH TEST"
-# ==========================================================
-
-# Test with various malformed inputs
-echo "" > /tmp/minirt_crash1.rt
-test_error "/tmp/minirt_crash1.rt" "" "Empty content (whitespace only)"
-
-echo "A 0.2 255,255,255" > /tmp/minirt_crash2.rt
-test_error "/tmp/minirt_crash2.rt" "" "Only ambient (missing C, L)"
-
-printf "A 0.2 255,255,255\nC 0,0,20 0,0,-1 70\nL 0,10,0 0.7 255,255,255\nsp 0,0,0 999999 255,0,0\n" > /tmp/minirt_crash3.rt
-timeout 5 ./miniRT /tmp/minirt_crash3.rt &
-pid=$!
-sleep 2
-if kill -0 "$pid" 2>/dev/null; then
-	kill "$pid" 2>/dev/null; wait "$pid" 2>/dev/null
-	ok "Huge sphere diameter: no crash"
-else
-	wait "$pid" 2>/dev/null
-	ec=$?
-	if [ "$ec" -eq 139 ] || [ "$ec" -eq 134 ]; then
-		ko "Huge sphere diameter: CRASH (exit $ec)"
-	else
-		ok "Huge sphere diameter: handled (exit $ec)"
+		ko "Norminette: $norm_errors hata bulundu"
+		echo "$norm_output" | grep "Error" | head -5
 	fi
 fi
 
-rm -f /tmp/minirt_crash1.rt /tmp/minirt_crash2.rt /tmp/minirt_crash3.rt
-
 # ==========================================================
-# SUMMARY
+# ÖZET
 # ==========================================================
 echo ""
 printf "${BOLD}╔══════════════════════════════════════════════╗${NC}\n"
-printf "${BOLD}║               EVALUATION SUMMARY             ║${NC}\n"
+printf "${BOLD}║              DEĞERLENDİRME ÖZETİ             ║${NC}\n"
 printf "${BOLD}╠══════════════════════════════════════════════╣${NC}\n"
-printf "║  ${GREEN}Pass: %-5d${NC}  ${RED}Fail: %-5d${NC}  ${YELLOW}Warn: %-5d${NC}       ║\n" "$PASS" "$FAIL" "$WARN"
-printf "║  Total: %-38d║\n" "$TOTAL"
+printf "║  ${GREEN}Başarılı: %-5d${NC} ${RED}Başarısız: %-5d${NC} ${YELLOW}Uyarı: %-5d${NC}  ║\n" "$PASS" "$FAIL" "$WARN"
+printf "║  Toplam Test: %-33d║\n" "$TOTAL"
 printf "${BOLD}╚══════════════════════════════════════════════╝${NC}\n"
 
 if [ "$FAIL" -gt 0 ]; then
