@@ -6,7 +6,7 @@
 /*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:07:48 by aerenler          #+#    #+#             */
-/*   Updated: 2026/02/27 15:47:42 by aerenler         ###   ########.fr       */
+/*   Updated: 2026/03/01 17:51:15 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,10 @@ void	parse_camera(t_scene *scene, char **tokens)
 	if (!parse_float_safe(tokens[i], &scene->camera.fov, scene,
 			"FOV is not a valid number"))
 		return ;
-	if (scene->camera.fov < 0 || scene->camera.fov >= 180)
+	if (scene->camera.fov < 0 || scene->camera.fov > 180)
 	{
 		scene->error = 1;
-		scene->err_msg = "FOV must be in range [0,180)";
+		scene->err_msg = "FOV must be in range [0,180]";
 		return ;
 	}
 	scene->has_camera = 1;

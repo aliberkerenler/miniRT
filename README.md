@@ -2,7 +2,7 @@
 
 # miniRT
 
-A minimal ray tracing engine written in C, capable of rendering 3D scenes with spheres, planes, and cylinders using the Phong reflection model.
+A minimal ray tracing engine written in C, capable of rendering 3D scenes with spheres, planes, and cylinders using ambient and diffuse lighting.
 
 ---
 
@@ -11,7 +11,7 @@ A minimal ray tracing engine written in C, capable of rendering 3D scenes with s
 **miniRT** is a lightweight ray tracer that renders 3D scenes defined in `.rt` configuration files. The project demonstrates fundamental concepts of computer graphics including:
 
 - **Ray-object intersection** algorithms for spheres, planes, and cylinders
-- **Phong lighting model** with ambient, diffuse lighting components
+- **Lighting model** with ambient and diffuse lighting components
 - **Shadow casting** for realistic scene rendering
 - **Camera positioning** with configurable field of view
 
@@ -23,7 +23,7 @@ The renderer supports multiple objects in a scene, handles object intersections 
 - ✅ Ambient and point light sources
 - ✅ Configurable camera position, orientation, and FOV
 - ✅ Shadow rendering
-- ✅ Phong diffuse lighting
+- ✅ Ambient and diffuse lighting
 - ✅ Scene configuration via `.rt` files
 - ✅ Window management (resize, minimize, close)
 - ✅ Keyboard controls (ESC to exit)
@@ -68,12 +68,12 @@ make re       # Rebuild everything
 
 Run miniRT with a scene file:
 ```bash
-./miniRT scenes/<scene_file>.rt
+./miniRT eval_scenes/<scene_file>.rt
 ```
 
 Example:
 ```bash
-./miniRT scenes/eval_sphere.rt
+./miniRT eval_scenes/01_basic_sphere.rt
 ```
 
 ### Controls
@@ -152,7 +152,7 @@ miniRT/
 │   │   ├── camera.c            # Camera ray generation
 │   │   ├── ray.c               # Ray constructor and utilities
 │   │   ├── intersect.c         # Closest hit detection
-│   │   └── lighting.c          # Phong lighting and shadows
+│   │   └── lighting.c          # Ambient/diffuse lighting and shadows
 │   ├── geometry/               # Ray-object intersections
 │   │   ├── hit_sphere.c        # Ray-sphere intersection
 │   │   ├── hit_plane.c         # Ray-plane intersection
@@ -163,7 +163,7 @@ miniRT/
 │       ├── vec3_operations.c   # Vector arithmetic (+, -, *, /)
 │       ├── vec3_properties.c   # Length, dot, cross, normalize
 │       └── color.c             # Color operations
-├── scenes/                     # Test scene files (.rt)
+├── eval_scenes/                # Evaluation scene files (.rt)
 ├── libft/                      # Custom C library
 ├── minilibx-linux/             # Graphics library (X11)
 ├── Makefile
@@ -174,19 +174,28 @@ miniRT/
 
 ### Evaluation Scenes
 
-The `scenes/` directory contains test files for each evaluation criterion:
+The `eval_scenes/` directory contains test files mapped to each evaluation sheet section:
 
-| File | Test |
-|------|------|
-| `eval_sphere.rt` | Basic sphere rendering |
-| `eval_plane.rt` | Basic plane rendering |
-| `eval_cylinder.rt` | Basic cylinder rendering |
-| `eval_translation.rt` | Object translation |
-| `eval_rotation.rt` | Cylinder rotation |
-| `eval_multi_*.rt` | Multiple objects |
-| `eval_cam_*.rt` | Camera positioning |
-| `eval_brightness*.rt` | Lighting tests |
-| `eval_shadow*.rt` | Shadow rendering |
+| Eval Section | File | Description |
+|---|---|---|
+| **Basic Shapes** | `01_basic_sphere.rt` | Sphere at {0,0,0}, camera facing it |
+| | `02_basic_plane.rt` | Plane with normal facing camera |
+| | `03_basic_cylinder.rt` | Cylinder along y axis, camera facing it |
+| **Translation** | `04_trans_spheres.rt` | Two spheres, one translated along camera direction |
+| **Rotation** | `05_rot_cylinder.rt` | Cylinder rotated 90° around z axis (y → x axis) |
+| **Multi-objects** | `06_multi_intersect.rt` | Intersecting sphere and cylinder at origin |
+| | `07_multi_same.rt` | Multiple objects of same type (2 spheres, 2 cylinders, 1 plane) |
+| **Camera position** | `08_cam_x.rt` | Camera along x axis pointing to origin |
+| | `09_cam_y.rt` | Camera along y axis pointing to origin |
+| | `10_cam_z.rt` | Camera along z axis pointing to origin |
+| | `11_cam_rand.rt` | Camera at random off-axis position |
+| **Brightness 1/2** | `12_light_side.rt` | Sphere at origin, light from the side |
+| | `13_light_trans.rt` | Translated sphere, light from the side |
+| **Brightness 2/2** | `14_shadow_basic.rt` | Sphere shadow cast on plane |
+| | `15_shadow_complex.rt` | Complex scene with multiple objects and shadows |
+| **Extra** | `16_shadow_overlap.rt` | Multiple overlapping object shadows |
+| | `17_multi_shadow_overlap.rt` | Sphere enclosing other objects |
+| **Bonus** | `eclipse.rt` | Solar eclipse simulation with shadow casting |
 
 ---
 
@@ -196,9 +205,10 @@ The `scenes/` directory contains test files for each evaluation criterion:
 
 - [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html) - Peter Shirley's excellent introduction to ray tracing
 - [Lineer Algebra](https://youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&si=tVKeAuZbzJjFQBcX) - Essence of linear algebra 3Blue1Brown
+
 ### AI Usage
 
-AI assistance (GitHub Copilot with Claude) was used in this project for:
+AI assistance was used in this project for:
 
 - **Bug detection:** Finding logical issues such as missing NULL checks, resource leaks, and formula inconsistencies
 - **Error handling:** Generating comprehensive error test cases and validation logic
