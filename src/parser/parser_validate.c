@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   parser_validate.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aerenler <aerenler@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 12:00:00 by aerenler          #+#    #+#             */
-/*   Updated: 2026/02/27 15:27:07 by aerenler         ###   ########.fr       */
+/*   Updated: 2026/03/03 23:58:27 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/parser.h"
 #include "../../include/minirt.h"
+#include <float.h>
 #include <stdlib.h>
 
 int	is_valid_int(const char *str)
@@ -48,6 +49,8 @@ int	is_valid_float(const char *str)
 	has_dot = 0;
 	if (str[i] == '-' || str[i] == '+')
 		i++;
+	if (str[i] < '0' || str[i] > '9')
+		return (0);
 	while (str[i])
 	{
 		if (str[i] == '.' && !has_dot)

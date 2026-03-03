@@ -6,7 +6,7 @@
 /*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:06:11 by aerenler          #+#    #+#             */
-/*   Updated: 2026/02/27 15:47:42 by aerenler         ###   ########.fr       */
+/*   Updated: 2026/03/03 23:56:50 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ char		*get_next_line(int fd);
 
 int			is_valid_int(const char *str);
 int			is_valid_float(const char *str);
+int			exceeds_int_value(const char *str, int boundary);
 int			validate_comma_format(const char *str, int expected_count);
 int			validate_color_values(char **rgb);
 int			validate_vector_values(char **coords);

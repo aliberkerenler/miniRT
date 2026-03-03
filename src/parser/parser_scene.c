@@ -6,7 +6,7 @@
 /*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:07:48 by aerenler          #+#    #+#             */
-/*   Updated: 2026/03/01 17:51:15 by aerenler         ###   ########.fr       */
+/*   Updated: 2026/03/03 23:56:50 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,14 @@ void	parse_ambient(t_scene *scene, char **tokens)
 	if (!parse_float_safe(tokens[i], &scene->ambient.ratio, scene,
 			"Ambient ratio is not a valid number"))
 		return ;
-	i++;
-	if (scene->ambient.ratio < 0.0 || scene->ambient.ratio > 1.0)
+	if (scene->ambient.ratio < 0.0 || scene->ambient.ratio > 1.0
+		|| exceeds_int_value(tokens[i], 1))
 	{
 		scene->error = 1;
 		scene->err_msg = "Ambient ratio must be in [0.0,1.0]";
 		return ;
 	}
+	i++;
 	if (!parse_color_safe(tokens, &i, &scene->ambient.color, scene))
 		return ;
 	scene->has_ambient = 1;
