@@ -6,7 +6,7 @@
 /*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:06:25 by aerenler          #+#    #+#             */
-/*   Updated: 2026/02/22 15:06:26 by aerenler         ###   ########.fr       */
+/*   Updated: 2026/03/03 16:43:48 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef struct s_cam_calc
 	t_vector	horizontal;
 	t_vector	vertical;
 	t_vector	world_up;
+	t_vector	upper_left;
 }	t_cam_calc;
 
 typedef struct s_diffuse_calc

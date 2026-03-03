@@ -6,7 +6,7 @@
 /*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:07:21 by aerenler          #+#    #+#             */
-/*   Updated: 2026/02/27 16:20:34 by aerenler         ###   ########.fr       */
+/*   Updated: 2026/03/03 16:44:44 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int	check_shadow(t_scene *scene, t_hit_record *rec,
 	shadow_ray.direction = light_dir;
 	if (find_closest_hit(scene, &shadow_ray, &temp_rec, &temp_obj))
 	{
-		if (temp_rec.t < light_dist - (EPSILON * 2.0))
+		if (temp_rec.t < light_dist - (EPSILON * 2))
 			return (1);
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: aerenler <aerenler@student.42istanbul.com.t+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:06:34 by aerenler          #+#    #+#             */
-/*   Updated: 2026/02/22 15:06:35 by aerenler         ###   ########.fr       */
+/*   Updated: 2026/03/03 16:45:09 by aerenler         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,19 @@ void	init_viewport(t_cam_calc *calc, t_camera *cam)
 	calc->up = vec3_normalize(vec3_cross(calc->right, calc->forward));
 	calc->horizontal = vec3_mul(calc->right, calc->viewport_width);
 	calc->vertical = vec3_mul(calc->up, calc->viewport_height);
+	calc->upper_left = vec3_add(cam->position,
+			vec3_mul(calc->forward, calc->focal_length));
+	calc->upper_left = vec3_sub(calc->upper_left,
+			vec3_div(calc->horizontal, 2.0));
+	calc->upper_left = vec3_add(calc->upper_left,
+			vec3_div(calc->vertical, 2.0));
 }
 
 t_ray	get_camera_ray(t_camera *cam, t_cam_calc *calc, double u, double v)
 {
-	t_vector	upper_left;
 	t_vector	direction;
 
-	upper_left = vec3_add(cam->position,
-			vec3_mul(calc->forward, calc->focal_length));
-	upper_left = vec3_sub(upper_left, vec3_div(calc->horizontal, 2.0));
-	upper_left = vec3_add(upper_left, vec3_div(calc->vertical, 2.0));
-	direction = vec3_add(upper_left, vec3_mul(calc->horizontal, u));
+	direction = vec3_add(calc->upper_left, vec3_mul(calc->horizontal, u));
 	direction = vec3_sub(direction, vec3_mul(calc->vertical, v));
 	direction = vec3_sub(direction, cam->position);
 	return (ray(cam->position, vec3_normalize(direction)));
